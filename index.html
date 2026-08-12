@@ -335,6 +335,94 @@
 
   footer a { color: var(--muted); text-decoration: none; }
   footer a:hover { color: var(--accent); }
+
+  /* PERFORMANCE TRACKER */
+  .tracker-section {
+    padding: 5rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .tracker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .tracker-avg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+  }
+
+  .tracker-avg.positive { color: var(--green); border-color: rgba(0,212,170,0.3); }
+  .tracker-avg.negative { color: var(--red); border-color: rgba(255,77,77,0.3); }
+  .tracker-avg.neutral { color: var(--muted); }
+
+  .tracker-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .tracker-table th {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tracker-table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .tracker-table tr:last-child td { border-bottom: none; }
+  .tracker-table tr:hover td { background: var(--bg2); }
+
+  .ticker-cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .change-positive { color: var(--green); font-weight: 500; }
+  .change-negative { color: var(--red); font-weight: 500; }
+
+  .tracker-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-size: 14px;
+    background: var(--bg2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .tracker-empty p { margin-top: 0.5rem; font-size: 13px; }
+
+  .last-updated {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .loading-row td {
+    color: var(--muted);
+    font-style: italic;
+  }
 </style>
 </head>
 <body>
@@ -439,6 +527,34 @@
   </div>
 </section>
 
+<section class="tracker-section">
+  <p class="section-label">Live performance</p>
+  <div class="tracker-header">
+    <h2 style="margin-bottom:0">Bot signal results<br>last 7 days</h2>
+    <div class="tracker-avg neutral" id="avg-badge">Loading...</div>
+  </div>
+
+  <div id="tracker-content">
+    <table class="tracker-table" id="tracker-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Signal date</th>
+          <th>Signal price</th>
+          <th>Current price</th>
+          <th>Return</th>
+        </tr>
+      </thead>
+      <tbody id="tracker-body"></tbody>
+    </table>
+    <div class="tracker-empty" id="tracker-empty" style="display:none">
+      <strong>No signals logged yet</strong>
+      <p>Results appear here when the bot fires its first alert. Check back soon.</p>
+    </div>
+  </div>
+  <div class="last-updated" id="last-updated"></div>
+</section>
+
 <section class="cta-section">
   <h2>Ready to trade<br>without the noise?</h2>
   <p>Free to use. Takes 30 seconds to set up.</p>
@@ -455,6 +571,97 @@
 <footer>
   <p>Built by a trader, for traders. &nbsp;·&nbsp; <a href="https://t.me/FourConditionBot">@FourConditionBot</a></p>
 </footer>
+
+<script>
+const API_URL = "https://stock-alert-bot-production-bfe5.up.railway.app/signals";
+const YAHOO_API = "https://query1.finance.yahoo.com/v8/finance/chart/";
+
+async function getCurrentPrice(ticker) {
+  try {
+    const res = await fetch(`${YAHOO_API}${ticker}?interval=1d&range=1d`);
+    const data = await res.json();
+    return data.chart.result[0].meta.regularMarketPrice;
+  } catch {
+    return null;
+  }
+}
+
+async function loadTracker() {
+  const tbody = document.getElementById("tracker-body");
+  const table = document.getElementById("tracker-table");
+  const empty = document.getElementById("tracker-empty");
+  const avgBadge = document.getElementById("avg-badge");
+  const lastUpdated = document.getElementById("last-updated");
+
+  try {
+    const res = await fetch(API_URL);
+    const signals = await res.json();
+
+    if (!signals || signals.length === 0) {
+      empty.style.display = "block";
+      table.style.display = "none";
+      avgBadge.textContent = "No data yet";
+      avgBadge.className = "tracker-avg neutral";
+      lastUpdated.textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
+      return;
+    }
+
+    table.style.display = "table";
+    empty.style.display = "none";
+    tbody.innerHTML = "";
+
+    const returns = [];
+
+    for (const signal of signals) {
+      const currentPrice = await getCurrentPrice(signal.ticker);
+      const signalPrice = signal.signal_price;
+
+      let changeStr = "—";
+      let changeClass = "";
+      let change = null;
+
+      if (currentPrice !== null) {
+        change = ((currentPrice - signalPrice) / signalPrice) * 100;
+        returns.push(change);
+        changeStr = `${change >= 0 ? "+" : ""}${change.toFixed(2)}%`;
+        changeClass = change >= 0 ? "change-positive" : "change-negative";
+      }
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="ticker-cell"><a href="https://finance.yahoo.com/quote/${signal.ticker}" target="_blank" style="color:var(--accent);text-decoration:none">${signal.ticker}</a></td>
+        <td>${signal.date}</td>
+        <td>$${signalPrice.toFixed(2)}</td>
+        <td>${currentPrice !== null ? "$" + currentPrice.toFixed(2) : "—"}</td>
+        <td class="${changeClass}">${changeStr}</td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    if (returns.length > 0) {
+      const avg = returns.reduce((a, b) => a + b, 0) / returns.length;
+      avgBadge.textContent = `Avg return: ${avg >= 0 ? "+" : ""}${avg.toFixed(2)}%`;
+      avgBadge.className = `tracker-avg ${avg >= 0 ? "positive" : "negative"}`;
+    } else {
+      avgBadge.textContent = "Prices loading...";
+      avgBadge.className = "tracker-avg neutral";
+    }
+
+    lastUpdated.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+
+  } catch (err) {
+    empty.style.display = "block";
+    empty.innerHTML = "<strong>Could not load signal data</strong><p>The tracker will retry shortly.</p>";
+    table.style.display = "none";
+    avgBadge.textContent = "Unavailable";
+    avgBadge.className = "tracker-avg neutral";
+  }
+}
+
+// Load on page open and refresh every 30 seconds
+loadTracker();
+setInterval(loadTracker, 30000);
+</script>
 
 </body>
 </html>
