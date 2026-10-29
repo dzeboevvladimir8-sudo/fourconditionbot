@@ -1,785 +1,1087 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FourConditionBot — No noise. Just signals.</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>FourConditionBot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap">
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0e1117;
-    --bg2: #1a1d27;
-    --bg3: #262b3a;
-    --accent: #00d4aa;
-    --accent-dim: rgba(0, 212, 170, 0.12);
-    --text: #e8eaf0;
-    --muted: #7a7f9a;
-    --border: rgba(255,255,255,0.07);
-    --red: #ff4d4d;
-    --green: #00d4aa;
+/* === TOKENS === */
+/* Layout: full-bleed dark hero, content in constrained columns, signal cards as the visual anchor */
+:root {
+  --bg: #f7f8fa;
+  --bg2: #ffffff;
+  --fg: #0f1117;
+  --fg2: #4a5568;
+  --fg3: #8a97a8;
+  --border: #e2e8f0;
+  --accent: #1a56db;
+  --accent-dim: #ebf0fd;
+  --green: #0d9c52;
+  --green-dim: #e6f7ee;
+  --amber: #d97706;
+  --amber-dim: #fef3cd;
+  --hero-bg: #0b0f1a;
+  --hero-fg: #e8ecf4;
+  --hero-fg2: #7a89a8;
+  --hero-border: rgba(255,255,255,0.08);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0f1a;
+    --bg2: #131929;
+    --fg: #e8ecf4;
+    --fg2: #8a97a8;
+    --fg3: #4a5568;
+    --border: rgba(255,255,255,0.09);
+    --accent: #4f83f0;
+    --accent-dim: #1a2847;
+    --green: #22c55e;
+    --green-dim: #0d2818;
+    --amber: #fbbf24;
+    --amber-dim: #2a1e05;
+    --hero-bg: #060810;
+    --hero-fg: #e8ecf4;
+    --hero-fg2: #5a6a84;
+    --hero-border: rgba(255,255,255,0.06);
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+    color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0f1a;
+  --bg2: #131929;
+  --fg: #e8ecf4;
+  --fg2: #8a97a8;
+  --fg3: #4a5568;
+  --border: rgba(255,255,255,0.09);
+  --accent: #4f83f0;
+  --accent-dim: #1a2847;
+  --green: #22c55e;
+  --green-dim: #0d2818;
+  --amber: #fbbf24;
+  --amber-dim: #2a1e05;
+  --hero-bg: #060810;
+  --hero-fg: #e8ecf4;
+  --hero-fg2: #5a6a84;
+  --hero-border: rgba(255,255,255,0.06);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  color-scheme: dark;
+}
 
-  html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
+body {
+  margin: 0;
+  font-family: var(--font-display);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 2rem;
-    background: rgba(14, 17, 23, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
+.wrap {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
 
-  .nav-logo {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-  }
+/* NAV */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: var(--hero-bg);
+  border-bottom: 1px solid var(--hero-border);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 14px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+  max-width: 1060px;
+  margin: 0 auto;
+}
+.nav-logo {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--hero-fg);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a {
+  color: var(--hero-fg2);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--hero-fg); }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 7px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: opacity 0.15s;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:hover { opacity: 0.88; }
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--hero-fg);
+  border: 1px solid var(--hero-border);
+  padding: 8px 18px;
+  border-radius: 7px;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.2); }
 
-  .nav-cta {
-    background: var(--accent);
-    color: #000;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0.45rem 1.1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: opacity 0.15s;
-  }
-  .nav-cta:hover { opacity: 0.85; }
+/* HERO */
+.hero {
+  background: var(--hero-bg);
+  padding-block: 80px 72px;
+}
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+.hero-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+h1 {
+  font-size: clamp(30px, 4.5vw, 48px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--hero-fg);
+  margin: 0 0 20px;
+  text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.hero-sub {
+  font-size: 16px;
+  color: var(--hero-fg2);
+  line-height: 1.65;
+  margin: 0 0 32px;
+  max-width: 480px;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-stats {
+  display: flex;
+  gap: 28px;
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--hero-border);
+}
+.hero-stat-n {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--hero-fg);
+  letter-spacing: -0.03em;
+}
+.hero-stat-l {
+  font-size: 12px;
+  color: var(--hero-fg2);
+  margin-top: 2px;
+}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 6rem 1.5rem 4rem;
-  }
+/* SIGNAL CARD in hero */
+.signal-card {
+  background: #131929;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  padding: 20px;
+  font-family: var(--font-mono);
+}
+.sc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(13,156,82,0.15);
+  color: #22c55e;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.sc-ticker {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--hero-fg);
+  letter-spacing: -0.02em;
+}
+.sc-price {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--hero-fg);
+  margin-bottom: 14px;
+  letter-spacing: -0.03em;
+}
+.sc-rows { display: flex; flex-direction: column; gap: 8px; }
+.sc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+}
+.sc-label { color: #5a6a84; }
+.sc-val { color: #e8ecf4; }
+.sc-val.pass { color: #22c55e; }
+.sc-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 11.5px;
+  color: #5a6a84;
+}
+.sc-strategy {
+  margin-top: 10px;
+  font-size: 11.5px;
+  background: rgba(79,131,240,0.12);
+  color: #7aabff;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
 
-  .hero-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-  }
+/* SECTIONS */
+section { padding-block: 72px; }
+section:nth-child(even) { background: var(--bg2); }
 
-  .hero h1 {
-    font-size: clamp(2.4rem, 6vw, 4.5rem);
-    font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    max-width: 780px;
-    margin-bottom: 1.5rem;
-  }
+h2 {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin: 0 0 10px;
+  text-wrap: balance;
+  color: var(--fg);
+}
+.section-sub {
+  font-size: 16px;
+  color: var(--fg2);
+  max-width: 540px;
+  margin: 0 0 44px;
+  line-height: 1.65;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
 
-  .hero h1 span {
-    color: var(--accent);
-  }
+/* HOW IT WORKS */
+.conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.cond-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  box-shadow: var(--card-shadow);
+}
+.cond-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.cond-title { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+.cond-desc { font-size: 12.5px; color: var(--fg2); line-height: 1.5; }
 
-  .hero-sub {
-    font-size: 1.1rem;
-    color: var(--muted);
-    max-width: 480px;
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
-  }
+.filters-list {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+.filter-row:last-child { border-bottom: none; }
+.filter-icon { font-size: 14px; flex-shrink: 0; }
+.filter-name { font-weight: 500; flex: 1; }
+.filter-desc { color: var(--fg2); font-size: 12.5px; }
 
-  .hero-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--accent);
-    color: #000;
-    font-size: 15px;
-    font-weight: 600;
-    padding: 0.85rem 2rem;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: opacity 0.15s, transform 0.15s;
-  }
-  .hero-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+/* QUIZ / STRATEGIES */
+.strategies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.strat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+}
+.strat-num {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--fg3);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.strat-name { font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
+.strat-desc { font-size: 12px; color: var(--fg2); line-height: 1.5; }
 
-  /* MOCK ALERT */
-  .alert-preview {
-    margin-top: 4rem;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    max-width: 360px;
-    text-align: left;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    line-height: 1.8;
-    position: relative;
-  }
+.quiz-flow {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-top: 32px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.quiz-flow-icon { font-size: 22px; flex-shrink: 0; }
+.quiz-flow-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--accent); }
+.quiz-flow-desc { font-size: 13px; color: var(--fg2); line-height: 1.55; }
 
-  .alert-preview::before {
-    content: 'Telegram — FourConditionBot';
-    display: block;
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 0.75rem;
-    letter-spacing: 0.05em;
-  }
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.feat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: var(--card-shadow);
+}
+.feat-icon { font-size: 22px; margin-bottom: 12px; }
+.feat-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+.feat-desc { font-size: 13px; color: var(--fg2); line-height: 1.55; }
 
-  .alert-ticker { color: var(--accent); font-weight: 600; }
-  .alert-down { color: var(--red); }
-  .alert-label { color: var(--muted); }
-  .alert-bell { font-size: 1rem; }
+/* COMMANDS */
+.commands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.cmd-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.cmd-code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.cmd-desc { font-size: 12.5px; color: var(--fg2); }
 
-  /* PULSE DOT */
-  .pulse-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .pulse {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pulse { animation: none; }
-  }
+/* FAQ */
+.faq-list { display: flex; flex-direction: column; gap: 1px; }
+.faq-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.faq-q {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 16px 20px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--fg);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+}
+.faq-q:hover { background: var(--accent-dim); }
+.faq-arrow { font-size: 12px; color: var(--fg3); transition: transform 0.2s; flex-shrink: 0; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a {
+  display: none;
+  padding: 0 20px 16px;
+  font-size: 13.5px;
+  color: var(--fg2);
+  line-height: 1.65;
+}
+.faq-item.open .faq-a { display: block; }
 
-  /* HOW IT WORKS */
-  .section {
-    padding: 5rem 1.5rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+/* CTA */
+.cta-section {
+  background: var(--hero-bg);
+  text-align: center;
+  padding-block: 72px;
+}
+.cta-section h2 { color: var(--hero-fg); }
+.cta-section p { color: var(--hero-fg2); max-width: 480px; margin: 0 auto 32px; font-size: 16px; }
+.setup-steps {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+  gap: 0;
+}
+.setup-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--hero-fg2);
+}
+.setup-step-n {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hero-fg);
+  flex-shrink: 0;
+}
+.setup-arrow { color: rgba(255,255,255,0.2); margin: 0 14px; font-size: 14px; }
 
-  .section-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
+/* FOOTER */
+footer {
+  background: var(--hero-bg);
+  border-top: 1px solid var(--hero-border);
+  padding-block: 28px;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+.footer-left { font-size: 13px; color: var(--hero-fg2); }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { color: var(--hero-fg2); text-decoration: none; font-size: 13px; }
+.footer-links a:hover { color: var(--hero-fg); }
 
-  .section h2 {
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin-bottom: 3rem;
-  }
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay[hidden] { display: none !important; }
+.modal-box {
+  background: var(--bg2);
+  border-radius: 14px;
+  max-width: 580px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 28px;
+}
+.modal-title { font-size: 18px; font-weight: 600; margin: 0 0 16px; }
+.modal-body { font-size: 13.5px; color: var(--fg2); line-height: 1.7; }
+.modal-body h3 { font-size: 14px; color: var(--fg); margin: 16px 0 6px; font-weight: 600; }
+.modal-close {
+  float: right;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--fg3);
+  margin-left: 12px;
+}
 
-  /* CONDITIONS GRID */
-  .conditions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
+/* COOKIE */
+.cookie-bar {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  left: max(16px, env(safe-area-inset-left, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  z-index: 100;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  font-size: 13px;
+  color: var(--fg2);
+}
+.cookie-bar[hidden] { display: none !important; }
+.cookie-actions { display: flex; gap: 8px; margin-left: auto; }
+.btn-sm {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+}
+.btn-sm-accent { background: var(--accent); color: #fff; }
+.btn-sm-ghost { background: var(--border); color: var(--fg2); }
 
-  .condition-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    transition: border-color 0.2s;
-  }
-  .condition-card:hover { border-color: rgba(0, 212, 170, 0.3); }
-
-  .condition-family {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-  }
-
-  .condition-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.3rem;
-  }
-
-  .condition-rule {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--accent);
-  }
-
-  /* WHY */
-  .why-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .why-item {
-    padding: 1.5rem;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-  }
-
-  .why-icon {
-    font-size: 1.4rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .why-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-  }
-
-  .why-desc {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* STATS */
-  .stats {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    padding: 3rem 1.5rem;
-    max-width: 900px;
-    margin: 0 auto;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .stat { flex: 1; min-width: 120px; }
-
-  .stat-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 0.3rem;
-  }
-
-  .stat-label {
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  /* CTA */
-  .cta-section {
-    text-align: center;
-    padding: 6rem 1.5rem;
-  }
-
-  .cta-section h2 {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin-bottom: 1rem;
-  }
-
-  .cta-section p {
-    color: var(--muted);
-    margin-bottom: 2rem;
-    font-size: 1rem;
-  }
-
-  .step-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 2.5rem;
-    font-size: 14px;
-    color: var(--muted);
-  }
-
-  .step-list span { color: var(--text); font-weight: 500; }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem 1.5rem;
-    text-align: center;
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  footer a { color: var(--muted); text-decoration: none; }
-  footer a:hover { color: var(--accent); }
-
-  /* ABOUT */
-  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
-  @media (max-width: 640px) { .about-grid { grid-template-columns: 1fr; } }
-  .about-text p { color: var(--muted); font-size: 15px; line-height: 1.8; margin-bottom: 1rem; }
-  .about-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 0.3rem 0.8rem; border-radius: 20px; background: var(--accent-dim); color: var(--accent); margin-right: 0.5rem; margin-bottom: 0.5rem; }
-
-  /* FAQ */
-  .faq-list { display: flex; flex-direction: column; gap: 1rem; }
-  .faq-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .faq-question { width: 100%; background: none; border: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500; padding: 1.25rem 1.5rem; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .faq-question:hover { color: var(--accent); }
-  .faq-arrow { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
-  .faq-item.open .faq-arrow { transform: rotate(180deg); }
-  .faq-answer { display: none; padding: 0 1.5rem 1.25rem; font-size: 14px; color: var(--muted); line-height: 1.7; }
-  .faq-item.open .faq-answer { display: block; }
-
-  /* LEGAL MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; max-width: 640px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 2rem; position: relative; }
-  .modal h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text); }
-  .modal p, .modal li { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 0.75rem; }
-  .modal h4 { font-size: 13px; font-weight: 600; color: var(--text); margin: 1.25rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
-  .modal-close:hover { color: var(--text); }
-
-  /* COOKIE BANNER */
-  .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 500; background: var(--bg2); border-top: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-  .cookie-banner.hidden { display: none; }
-  .cookie-actions { display: flex; gap: 0.75rem; }
-  .cookie-btn { font-size: 12px; font-weight: 600; padding: 0.4rem 1rem; border-radius: 6px; border: none; cursor: pointer; transition: opacity 0.15s; }
-  .cookie-btn:hover { opacity: 0.85; }
-  .cookie-btn.accept { background: var(--accent); color: #000; }
-  .cookie-btn.decline { background: var(--bg3); color: var(--muted); }
-
-  /* ARTICLES */
-  .articles-section {
-    padding: 5rem 1.5rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .article-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.75rem 2rem;
-    margin-bottom: 1rem;
-    transition: border-color 0.2s;
-  }
-  .article-card:hover { border-color: rgba(0,212,170,0.3); }
-
-  .article-month {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.75rem;
-  }
-
-  .article-headline {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 1.5;
-    color: var(--text);
-    margin-bottom: 1rem;
-  }
-
-  .article-stats {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .article-stat {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .article-stat span {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .article-return-positive { color: var(--green) !important; }
-  .article-return-negative { color: var(--red) !important; }
-
-  .articles-empty {
-    text-align: center;
-    padding: 3rem;
-    color: var(--muted);
-    font-size: 14px;
-    background: var(--bg2);
-    border-radius: 10px;
-    border: 1px solid var(--border);
-  }
-
-  .articles-empty p { margin-top: 0.5rem; font-size: 13px; }
+@media (max-width: 720px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .signal-card { display: none; }
+  .conditions-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 18px; flex-wrap: wrap; }
+  .nav-links .hide-mobile { display: none; }
+  .setup-steps { flex-direction: column; align-items: center; gap: 10px; }
+  .setup-arrow { transform: rotate(90deg); }
+}
+@media (max-width: 480px) {
+  section { padding-block: 52px; }
+  h2 { font-size: 22px; }
+  .strategies-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
-<link rel="icon" href="favicon.png" type="image/png">
-</head>
-<script defer data-domain="fourcondition.app" src="https://plausible.io/js/script.js"></script>
-<body>
 
+<!-- NAV -->
 <nav>
-  <span class="nav-logo">🔔 FourConditionBot</span>
-  <a class="nav-cta" href="https://t.me/FourConditionBot">Join on Telegram</a>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Four<span>Condition</span>Bot</a>
+    <div class="nav-links">
+      <a href="#how" class="hide-mobile">How it works</a>
+      <a href="#strategies" class="hide-mobile">Strategies</a>
+      <a href="#faq" class="hide-mobile">FAQ</a>
+      <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Open Telegram →</a>
+    </div>
+  </div>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
-  <p class="hero-eyebrow">Stock Alert Bot</p>
-  <h1>No noise.<br><span>Just signals.</span></h1>
-  <p class="hero-sub">FourConditionBot monitors 61 stocks and only alerts you when all four independent indicators align — trend, momentum, volume, and volatility.</p>
-  <a class="hero-btn" href="https://t.me/FourConditionBot">
-    Start on Telegram →
-  </a>
-
-  <div class="alert-preview">
-    <div class="pulse-wrap">
-      <div class="pulse"></div>
-      <span style="font-size:11px;color:var(--muted)">Buy Signal Detected</span>
-    </div>
-    <div class="alert-bell">🔔</div>
-    <div class="alert-ticker">AAPL</div>
-    <div><span class="alert-label">Price: </span>$282.11 <span class="alert-down">(-4.95% below 20MA of $296.79)</span></div>
-    <div><span class="alert-label">RSI: </span>33.5</div>
-    <div><span class="alert-label">Lower Bollinger Band: </span>$276.61</div>
-    <div style="margin-top:0.5rem"><a href="#" style="color:var(--accent);text-decoration:none">📊 View on Yahoo Finance</a></div>
-  </div>
-</section>
-
-<section class="section">
-  <p class="section-label">How it works</p>
-  <h2>All four must align.<br>Nothing fires otherwise.</h2>
-  <div class="conditions">
-    <div class="condition-card">
-      <div class="condition-family">Trend</div>
-      <div class="condition-name">20-Day Moving Average</div>
-      <div class="condition-rule">Price &lt; MA20</div>
-    </div>
-    <div class="condition-card">
-      <div class="condition-family">Momentum</div>
-      <div class="condition-name">RSI</div>
-      <div class="condition-rule">RSI &lt; 45</div>
-    </div>
-    <div class="condition-card">
-      <div class="condition-family">Volume</div>
-      <div class="condition-name">On-Balance Volume</div>
-      <div class="condition-rule">OBV trending up</div>
-    </div>
-    <div class="condition-card">
-      <div class="condition-family">Volatility</div>
-      <div class="condition-name">Bollinger Bands</div>
-      <div class="condition-rule">Price near lower band</div>
-    </div>
-  </div>
-</section>
-
-<div class="stats">
-  <div class="stat">
-    <div class="stat-num">300+</div>
-    <div class="stat-label">Stocks monitored</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">4</div>
-    <div class="stat-label">Conditions required</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">30m</div>
-    <div class="stat-label">Scan frequency</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">free</div>
-    <div class="stat-label">Always</div>
-  </div>
-</div>
-
-<section class="section">
-  <p class="section-label">Why FourConditionBot</p>
-  <h2>Built to replace<br>emotional trading.</h2>
-  <div class="why-grid">
-    <div class="why-item">
-      <div class="why-icon">🔕</div>
-      <div class="why-title">Zero noise</div>
-      <div class="why-desc">Your phone only buzzes when something real happens. No daily summaries, no market updates, no spam.</div>
-    </div>
-    <div class="why-item">
-      <div class="why-icon">📐</div>
-      <div class="why-title">Four independent signals</div>
-      <div class="why-desc">One indicator can lie. Four independent ones from different families — trend, momentum, volume, volatility — rarely do.</div>
-    </div>
-    <div class="why-item">
-      <div class="why-icon">⚡</div>
-      <div class="why-title">Always running</div>
-      <div class="why-desc">Scans every 30 minutes during market hours, 24/7 in the cloud. You don't need to watch anything.</div>
-    </div>
-    <div class="why-item">
-      <div class="why-icon">🧠</div>
-      <div class="why-title">You make the call</div>
-      <div class="why-desc">The bot narrows 300 stocks to 4-5 real candidates. You still decide whether to buy. Discipline, not automation.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="section">
-  <p class="section-label">About</p>
-  <div class="about-grid">
+  <div class="hero-inner">
     <div>
-      <h2 style="margin-bottom:1.5rem">Built by a 15-year-old<br>trader in Istanbul.</h2>
-      <div>
-        <span class="about-tag">Independent</span>
-        <span class="about-tag">No ads</span>
-        <span class="about-tag">No financial advice</span>
+      <div class="hero-eyebrow"><span class="hero-dot"></span>Live · Free · No noise</div>
+      <h1>Stock alerts built on <em>four conditions</em>, not hype.</h1>
+      <p class="hero-sub">FourConditionBot monitors 300+ stocks around the clock and sends a Telegram signal only when price, momentum, and volatility all align — filtered for your personal strategy.</p>
+      <div class="hero-actions">
+        <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Start free on Telegram</a>
+        <a href="#how" class="btn-ghost">See how it works</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-n">300+</div>
+          <div class="hero-stat-l">Stocks monitored</div>
+        </div>
+        <div>
+          <div class="hero-stat-n">4</div>
+          <div class="hero-stat-l">Conditions required</div>
+        </div>
+        <div>
+          <div class="hero-stat-n">10</div>
+          <div class="hero-stat-l">Investment strategies</div>
+        </div>
+        <div>
+          <div class="hero-stat-n">Free</div>
+          <div class="hero-stat-l">Always</div>
+        </div>
       </div>
     </div>
-    <div class="about-text">
-      <p>FourConditionBot started as a personal tool to remove emotion from trading decisions. The idea was simple: instead of manually checking dozens of indicators every day and making impulsive decisions, let a bot do the watching and only alert when everything lines up.</p>
-      <p>It's built and maintained by one person. No team, no investors, no agenda. Just a tool that does one thing well — signals when four independent conditions align across trend, momentum, volume, and volatility.</p>
-      <p>Questions or feedback: <a href="mailto:fourconditionbot@gmail.com" style="color:var(--accent)">fourconditionbot@gmail.com</a></p>
+    <div>
+      <div class="signal-card">
+        <div class="sc-header">
+          <span class="sc-badge">● Buy signal</span>
+          <span class="sc-ticker">NVDA</span>
+        </div>
+        <div class="sc-price">$487.32</div>
+        <div class="sc-rows">
+          <div class="sc-row">
+            <span class="sc-label">Price vs 20MA</span>
+            <span class="sc-val pass">Below ✓</span>
+          </div>
+          <div class="sc-row">
+            <span class="sc-label">RSI (14)</span>
+            <span class="sc-val pass">44.2 — oversold ✓</span>
+          </div>
+          <div class="sc-row">
+            <span class="sc-label">Bollinger proximity</span>
+            <span class="sc-val pass">Near lower band ✓</span>
+          </div>
+          <div class="sc-row">
+            <span class="sc-label">Trend gate (200SMA)</span>
+            <span class="sc-val pass">Within range ✓</span>
+          </div>
+          <div class="sc-row">
+            <span class="sc-label">EPS trend</span>
+            <span class="sc-val pass">Positive growth ✓</span>
+          </div>
+        </div>
+        <div class="sc-strategy">Strategy 4 · Growth at Discount · Custom thresholds active</div>
+        <div class="sc-footer">📊 View on Yahoo Finance · Not financial advice</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-label">Signal logic</div>
+    <h2>Four conditions. All must pass.</h2>
+    <p class="section-sub">Every signal requires price, momentum, and volatility to align simultaneously. No single indicator is ever enough.</p>
+
+    <div class="conditions-grid">
+      <div class="cond-card">
+        <div class="cond-icon">📉</div>
+        <div>
+          <div class="cond-title">Price below 20-day MA</div>
+          <div class="cond-desc">The stock is trading below its short-term average — a potential pullback from a trend.</div>
+        </div>
+      </div>
+      <div class="cond-card">
+        <div class="cond-icon">⚡</div>
+        <div>
+          <div class="cond-title">RSI below 50</div>
+          <div class="cond-desc">Momentum is weakened but not yet in freefall. RSI below 50 signals cooling without capitulation.</div>
+        </div>
+      </div>
+      <div class="cond-card">
+        <div class="cond-icon">📊</div>
+        <div>
+          <div class="cond-title">Near lower Bollinger Band</div>
+          <div class="cond-desc">Price is within 2% of the lower band — statistically stretched to the downside.</div>
+        </div>
+      </div>
+      <div class="cond-card">
+        <div class="cond-icon">🛡️</div>
+        <div>
+          <div class="cond-title">Passes all active filters</div>
+          <div class="cond-desc">Earnings blackout, trend gate, 52-week low guard, EPS trend, and penny stock filter must all clear.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:40px">Smart filters</div>
+    <p style="color:var(--fg2);font-size:14px;margin:0 0 16px">Signals that would likely fail are suppressed before they reach you.</p>
+    <div class="filters-list">
+      <div class="filter-row">
+        <span class="filter-icon">📅</span>
+        <span class="filter-name">Earnings blackout</span>
+        <span class="filter-desc">Suppresses alerts 5 days before and 3 days after earnings reports</span>
+      </div>
+      <div class="filter-row">
+        <span class="filter-icon">📉</span>
+        <span class="filter-name">52-week low guard</span>
+        <span class="filter-desc">Blocks signals within 5% of a 52-week low or recent 10-session lows</span>
+      </div>
+      <div class="filter-row">
+        <span class="filter-icon">📏</span>
+        <span class="filter-name">Trend gate</span>
+        <span class="filter-desc">Skips stocks more than 8% below their 200-day SMA — in a true downtrend</span>
+      </div>
+      <div class="filter-row">
+        <span class="filter-icon">💹</span>
+        <span class="filter-name">EPS trend filter</span>
+        <span class="filter-desc">Requires positive forward earnings growth (with whitelist exceptions for high-growth names)</span>
+      </div>
+      <div class="filter-row">
+        <span class="filter-icon">🚫</span>
+        <span class="filter-name">Penny stock filter</span>
+        <span class="filter-desc">Removes any stock trading below $1.00 per share</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGIES / QUIZ -->
+<section id="strategies">
+  <div class="wrap">
+    <div class="section-label">Personalization</div>
+    <h2>Your strategy. Your signals.</h2>
+    <p class="section-sub">A 10-question onboarding quiz assigns you one of ten investment strategies. Each strategy adjusts the signal thresholds to match your risk tolerance, holding period, and goals.</p>
+
+    <div class="strategies-grid">
+      <div class="strat-card">
+        <div class="strat-num">01</div>
+        <div class="strat-name">Conservative Income</div>
+        <div class="strat-desc">Low-risk dividend focus, strict filters</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">02</div>
+        <div class="strat-name">Balanced Growth</div>
+        <div class="strat-desc">Mix of growth and stability</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">03</div>
+        <div class="strat-name">Aggressive Growth</div>
+        <div class="strat-desc">Higher risk tolerance, wider thresholds</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">04</div>
+        <div class="strat-name">Growth at Discount</div>
+        <div class="strat-desc">Quality names on meaningful pullbacks</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">05</div>
+        <div class="strat-name">Momentum Swing</div>
+        <div class="strat-desc">Short-term dips in trending stocks</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">06</div>
+        <div class="strat-name">Sector Rotation</div>
+        <div class="strat-desc">Follows capital flows between sectors</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">07</div>
+        <div class="strat-name">Blue Chip Only</div>
+        <div class="strat-desc">Large-cap stability with mean reversion</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">08</div>
+        <div class="strat-name">Small Cap Hunter</div>
+        <div class="strat-desc">Smaller names with outsized potential</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">09</div>
+        <div class="strat-name">Value Deep Dive</div>
+        <div class="strat-desc">Fundamentally strong, temporarily beaten down</div>
+      </div>
+      <div class="strat-card">
+        <div class="strat-num">10</div>
+        <div class="strat-name">Custom / Advanced</div>
+        <div class="strat-desc">Pick your own indicators and thresholds manually</div>
+      </div>
+    </div>
+
+    <div class="quiz-flow">
+      <div class="quiz-flow-icon">🧠</div>
+      <div>
+        <div class="quiz-flow-title">Strategy assigned by quiz</div>
+        <div class="quiz-flow-desc">When you start the bot, a 10-question quiz asks about your experience, risk tolerance, and goals. Your answers determine which strategy — and which signal thresholds — apply to you. You can retake it anytime with <code>/retakequiz</code>, or go fully custom with Strategy 10 where you choose every indicator yourself.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <div class="wrap">
+    <div class="section-label">What's included</div>
+    <h2>Everything in one bot.</h2>
+    <p class="section-sub">No apps to install. No accounts to create. Everything runs inside Telegram.</p>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">Personal watchlist</div>
+        <div class="feat-desc">Add up to 150 tickers with <code>/add</code>, remove with <code>/remove</code>, view live prices with <code>/status</code>. Supports multiple tickers in one command.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📦</div>
+        <div class="feat-title">Stock packs</div>
+        <div class="feat-desc">Pre-built watchlists for Tech, Finance, Health, Energy, and Universal sectors. Load any with <code>/packload tech</code>.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚙️</div>
+        <div class="feat-title">Per-user settings</div>
+        <div class="feat-desc">Adjust RSI threshold, Bollinger proximity, trend gate, earnings blackout days, ATR multiplier, and OBV lookback to match your style.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔇</div>
+        <div class="feat-title">Ignore list</div>
+        <div class="feat-desc">Mute specific tickers you don't want to hear about with <code>/ignore AAPL</code>. Clear all with <code>/unignore</code>.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🏆</div>
+        <div class="feat-title">Top signals</div>
+        <div class="feat-desc">See which stocks on your watchlist currently have the most conditions passing with <code>/topsignal</code>.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📰</div>
+        <div class="feat-title">Monthly performance articles</div>
+        <div class="feat-desc">Auto-generated reports every month analyzing how past signals performed. Published at fourcondition.app.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:36px">
+      <div class="section-label">Commands</div>
+      <div class="commands-grid" style="margin-top:12px">
+        <div class="cmd-row"><div><div class="cmd-code">/add TSLA AAPL</div><div class="cmd-desc">Add tickers to watchlist</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/remove TSLA</div><div class="cmd-desc">Remove from watchlist</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/list</div><div class="cmd-desc">View your watchlist</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/status</div><div class="cmd-desc">Live prices for all tickers</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/profile</div><div class="cmd-desc">View your assigned strategy</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/retakequiz</div><div class="cmd-desc">Redo the strategy quiz</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/settings</div><div class="cmd-desc">View your custom thresholds</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/set rsi 45</div><div class="cmd-desc">Adjust a specific setting</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/packload tech</div><div class="cmd-desc">Load a sector stock pack</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/topsignal</div><div class="cmd-desc">Best current setups</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/ignore COIN</div><div class="cmd-desc">Mute a ticker</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/resetsettings</div><div class="cmd-desc">Reset to strategy defaults</div></div></div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="section">
-  <p class="section-label">FAQ</p>
-  <h2 style="margin-bottom:2rem">Common questions.</h2>
-  <div class="faq-list">
-    <div class="faq-item">
-      <button class="faq-question" onclick="toggleFaq(this)">Is this financial advice? <span class="faq-arrow">▼</span></button>
-      <div class="faq-answer">No. FourConditionBot is a technical analysis tool. It identifies patterns in price and volume data — it does not predict the future or recommend what to buy or sell. Always do your own research before making any investment decision.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" onclick="toggleFaq(this)">How does it work? <span class="faq-arrow">▼</span></button>
-      <div class="faq-answer">The bot scans your personal watchlist every 30 minutes during US market hours. When all four conditions align simultaneously — RSI below threshold, price below moving average, OBV trending up, and price near the lower Bollinger Band — it sends you a Telegram alert. Additional filters suppress alerts near earnings dates, 52-week lows, and poor reward-to-risk setups.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" onclick="toggleFaq(this)">Is it free? <span class="faq-arrow">▼</span></button>
-      <div class="faq-answer">Yes, completely free. There are no paid tiers, no premium features, and no ads. It costs nothing to use.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" onclick="toggleFaq(this)">What stocks does it cover? <span class="faq-arrow">▼</span></button>
-      <div class="faq-answer">You build your own personal watchlist. You can add any US-listed stock ticker, load curated packs (Tech, Finance, Health, Energy, Universal), or let the onboarding quiz recommend a starting portfolio based on your investment style.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" onclick="toggleFaq(this)">What data does the bot store? <span class="faq-arrow">▼</span></button>
-      <div class="faq-answer">The bot stores your Telegram chat ID and your watchlist. No personal information, no financial data, no trading history. You can delete your data at any time by contacting fourconditionbot@gmail.com.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" onclick="toggleFaq(this)">How accurate are the signals? <span class="faq-arrow">▼</span></button>
-      <div class="faq-answer">The bot identifies technical setups — it doesn't guarantee outcomes. Signals are filtered to reduce false positives (earnings blackouts, falling knives, poor R:R setups) but no technical system is 100% accurate. Use signals as one input to your own analysis, not as the sole basis for a trade.</div>
+<section id="faq">
+  <div class="wrap">
+    <div class="section-label">Questions</div>
+    <h2>Frequently asked</h2>
+    <p class="section-sub" style="margin-bottom:32px">Everything you need to know before you start.</p>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is this financial advice? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">No. FourConditionBot is a technical screening tool. Signals indicate when certain conditions align on a chart — they are not buy or sell recommendations. Always do your own research before making any trade.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How do signals actually work? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">Every 30 minutes during US market hours, the bot scans your entire watchlist. If a stock passes all four core conditions (price below 20MA, RSI below 50, near lower Bollinger Band, and all smart filters) it sends you a Telegram message with the details. Your personal strategy adjusts which thresholds are used.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What is the quiz and why does it matter? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">When you first message the bot, a 10-question quiz determines your investment strategy out of 10 options — from Conservative Income to Aggressive Growth to fully Custom. Your strategy sets the signal thresholds (RSI level, Bollinger proximity, trend gate strictness) so the alerts match how you actually invest. You can retake it or switch to custom mode anytime.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is it free? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">Yes, completely free. There are no plans, no trials, and no hidden limits. The watchlist supports up to 150 stocks per user.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Which stocks does it cover? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">You build your own watchlist from any US-listed stock. The bot comes with sector packs (Tech, Finance, Health, Energy, Universal) to get you started quickly. Data is sourced from Yahoo Finance and Polygon.io.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What data is stored about me? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">Only your Telegram chat ID, your watchlist, your strategy settings, and your signal history. No name, no email, no payment info. Data is stored on Railway servers in the US. You can request deletion by emailing fourconditionbot@gmail.com and it will be removed within 7 days.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Why has there been no signal for a while? <span class="faq-arrow">▾</span></button>
+        <div class="faq-a">All four conditions must align at the same time. In trending or choppy markets, stocks rarely pull back to the Bollinger lower band while also having RSI below 50. Fewer signals means fewer setups worth considering — that is intentional. Quality over quantity.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="articles-section">
-  <p class="section-label">Signal performance</p>
-  <h2 style="margin-bottom:2rem">What our signals<br>have returned.</h2>
-  <div id="articles-container">
-    <div class="articles-empty">
-      <strong>First report coming soon</strong>
-      <p>Monthly performance reports are generated automatically on the 1st of each month.</p>
-    </div>
-  </div>
-</section>
-
+<!-- CTA -->
 <section class="cta-section">
-  <h2>Ready to trade<br>without the noise?</h2>
-  <p>Free to use. Takes 30 seconds to set up.</p>
-  <div class="step-list">
-    <div>1. Open Telegram and search <span>@FourConditionBot</span></div>
-    <div>2. Press <span>Start</span></div>
-    <div>3. Wait for your first signal</div>
+  <div class="wrap">
+    <h2>Ready to cut the noise?</h2>
+    <p>Three steps. Takes under a minute. Free forever.</p>
+    <div class="setup-steps">
+      <div class="setup-step">
+        <div class="setup-step-n">1</div>
+        Open FourConditionBot on Telegram
+      </div>
+      <div class="setup-arrow">→</div>
+      <div class="setup-step">
+        <div class="setup-step-n">2</div>
+        Take the 10-question strategy quiz
+      </div>
+      <div class="setup-arrow">→</div>
+      <div class="setup-step">
+        <div class="setup-step-n">3</div>
+        Add tickers and wait for signals
+      </div>
+    </div>
+    <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener" style="font-size:15px;padding:12px 28px">Open on Telegram →</a>
   </div>
-  <a class="hero-btn" href="https://t.me/FourConditionBot">
-    Open FourConditionBot →
-  </a>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <p>Built by a trader, for traders. &nbsp;·&nbsp; <a href="https://t.me/FourConditionBot">@FourConditionBot</a> &nbsp;·&nbsp; <a href="#" onclick="openModal('terms')">Terms</a> &nbsp;·&nbsp; <a href="#" onclick="openModal('privacy')">Privacy</a> &nbsp;·&nbsp; <a href="mailto:fourconditionbot@gmail.com">Contact</a></p>
-  <p style="margin-top:0.5rem;font-size:11px;">Not financial advice. For informational purposes only.</p>
+  <div class="footer-inner">
+    <span class="footer-left">© 2026 FourConditionBot · Not financial advice</span>
+    <div class="footer-links">
+      <a href="#" onclick="openModal('terms');return false">Terms</a>
+      <a href="#" onclick="openModal('privacy');return false">Privacy</a>
+      <a href="mailto:fourconditionbot@gmail.com">Contact</a>
+    </div>
+  </div>
 </footer>
 
 <!-- TERMS MODAL -->
-<div class="modal-overlay" id="modal-terms">
-  <div class="modal">
+<div class="modal-overlay" id="modal-terms" hidden>
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('terms')">✕</button>
-    <h3>Terms of Service</h3>
-    <p>Last updated: September 2026</p>
-
-    <h4>1. Acceptance</h4>
-    <p>By using FourConditionBot ("the Service"), you agree to these terms. If you do not agree, do not use the Service.</p>
-
-    <h4>2. Not Financial Advice</h4>
-    <p>FourConditionBot is a technical analysis tool for informational purposes only. Nothing the Service provides constitutes financial, investment, or trading advice. You are solely responsible for your own investment decisions. Past signal performance does not guarantee future results.</p>
-
-    <h4>3. No Warranties</h4>
-    <p>The Service is provided "as is" without warranties of any kind. We do not guarantee the accuracy, completeness, or timeliness of any signals or data. The Service may be unavailable at any time without notice.</p>
-
-    <h4>4. Limitation of Liability</h4>
-    <p>FourConditionBot and its creator shall not be liable for any financial losses, damages, or other consequences arising from your use of the Service or reliance on any signals provided.</p>
-
-    <h4>5. Eligibility</h4>
-    <p>You must be of legal age to invest in your jurisdiction to use this Service. By using the Service, you confirm you meet this requirement.</p>
-
-    <h4>6. Changes</h4>
-    <p>We may update these terms at any time. Continued use of the Service constitutes acceptance of updated terms.</p>
-
-    <h4>7. Contact</h4>
-    <p>Questions: <a href="mailto:fourconditionbot@gmail.com" style="color:var(--accent)">fourconditionbot@gmail.com</a></p>
+    <div class="modal-title">Terms of Service</div>
+    <div class="modal-body">
+      <h3>1. Acceptance</h3>
+      By using FourConditionBot you agree to these terms. If you do not agree, stop using the service.
+      <h3>2. No financial advice</h3>
+      All signals and content are for informational purposes only. Nothing here constitutes investment advice. You make your own trading decisions.
+      <h3>3. No warranties</h3>
+      The service is provided as-is. We make no guarantees about uptime, accuracy, or signal performance.
+      <h3>4. Limitation of liability</h3>
+      FourConditionBot and its creator are not liable for any trading losses or decisions made based on signals.
+      <h3>5. Eligibility</h3>
+      You must be of legal age in your jurisdiction to use financial tools.
+      <h3>6. Changes</h3>
+      Terms may change at any time. Continued use constitutes acceptance.
+      <h3>Contact</h3>
+      fourconditionbot@gmail.com
+    </div>
   </div>
 </div>
 
 <!-- PRIVACY MODAL -->
-<div class="modal-overlay" id="modal-privacy">
-  <div class="modal">
+<div class="modal-overlay" id="modal-privacy" hidden>
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('privacy')">✕</button>
-    <h3>Privacy Policy</h3>
-    <p>Last updated: September 2026</p>
-
-    <h4>What we collect</h4>
-    <p>When you start FourConditionBot on Telegram, we store your Telegram chat ID and your personal watchlist (the stock tickers you add). We do not collect your name, email, phone number, or any financial account information.</p>
-
-    <h4>How we use it</h4>
-    <p>Your chat ID is used solely to send you alerts. Your watchlist is used solely to determine which stocks to monitor for you. We do not sell, share, or monetize your data in any way.</p>
-
-    <h4>Data storage</h4>
-    <p>Your data is stored on Railway's secure cloud infrastructure in the United States. It is retained for as long as you use the Service.</p>
-
-    <h4>Your rights</h4>
-    <p>You can request deletion of all your data at any time by emailing <a href="mailto:fourconditionbot@gmail.com" style="color:var(--accent)">fourconditionbot@gmail.com</a>. We will delete your data within 7 days.</p>
-
-    <h4>Cookies</h4>
-    <p>This website uses a single cookie to remember your cookie consent preference. No tracking, analytics, or advertising cookies are used.</p>
-
-    <h4>Third parties</h4>
-    <p>We use Telegram to deliver alerts and Massive (formerly Polygon.io) to fetch stock market data. These services have their own privacy policies.</p>
-
-    <h4>Contact</h4>
-    <p>Questions: <a href="mailto:fourconditionbot@gmail.com" style="color:var(--accent)">fourconditionbot@gmail.com</a></p>
+    <div class="modal-title">Privacy Policy</div>
+    <div class="modal-body">
+      <h3>What we collect</h3>
+      Your Telegram chat ID, watchlist, strategy settings, and signal history. Nothing else.
+      <h3>How it's used</h3>
+      To deliver signals to you and remember your preferences. Never sold or shared with third parties.
+      <h3>Storage</h3>
+      Data is stored on Railway servers in the United States.
+      <h3>Deletion</h3>
+      Email fourconditionbot@gmail.com to request deletion. Processed within 7 days.
+      <h3>Cookies</h3>
+      This website uses a single cookie to remember your cookie consent choice.
+      <h3>Third-party services</h3>
+      Telegram (message delivery), Yahoo Finance and Polygon.io (market data), Plausible Analytics (anonymous traffic stats — no personal data).
+      <h3>Contact</h3>
+      fourconditionbot@gmail.com
+    </div>
   </div>
 </div>
 
-<!-- COOKIE BANNER -->
-<div class="cookie-banner" id="cookie-banner">
-  <span>We use a single cookie to remember your preferences. No tracking or advertising. <a href="#" onclick="openModal('privacy')" style="color:var(--accent)">Privacy Policy</a></span>
+<!-- COOKIE BAR -->
+<div class="cookie-bar" id="cookie-bar">
+  <span>This site uses one cookie to remember your consent.</span>
   <div class="cookie-actions">
-    <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
-    <button class="cookie-btn accept" onclick="acceptCookies()">Accept</button>
+    <button class="btn-sm btn-sm-ghost" onclick="dismissCookie()">Decline</button>
+    <button class="btn-sm btn-sm-accent" onclick="acceptCookie()">Accept</button>
   </div>
 </div>
 
 <script>
-const ARTICLES_URL = "https://stock-alert-bot-production-bfe5.up.railway.app/articles";
-
-async function loadArticles() {
-  const container = document.getElementById("articles-container");
-
+// Cookie banner
+(function(){
   try {
-    const res = await fetch(ARTICLES_URL);
-    const articles = await res.json();
-
-    if (!articles || articles.length === 0) {
-      container.innerHTML = `
-        <div class="articles-empty">
-          <strong>First report coming soon</strong>
-          <p>Monthly performance reports are generated automatically on the 1st of each month.</p>
-        </div>`;
-      return;
+    if (localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookie-bar').hidden = true;
     }
+  } catch(e){}
+})();
 
-    // Show newest first
-    const sorted = [...articles].reverse();
-    container.innerHTML = sorted.map(a => {
-      const returnClass = a.return_pct >= 0 ? "article-return-positive" : "article-return-negative";
-      const returnStr = `${a.return_pct >= 0 ? "+" : ""}${a.return_pct}%`;
-      return `
-        <div class="article-card">
-          <div class="article-month">${a.month}</div>
-          <div class="article-headline">${a.headline}</div>
-          <div class="article-stats">
-            <div class="article-stat">Ticker <span>${a.ticker}</span></div>
-            <div class="article-stat">Detected <span>${a.signal_date}</span></div>
-            <div class="article-stat">Signal price <span>$${a.signal_price.toFixed(2)}</span></div>
-            <div class="article-stat">Current price <span>$${a.current_price.toFixed(2)}</span></div>
-            <div class="article-stat">Return <span class="${returnClass}">${returnStr}</span></div>
-            <div class="article-stat">Days held <span>${a.days_held}</span></div>
-          </div>
-        </div>`;
-    }).join("");
-
-  } catch (err) {
-    container.innerHTML = `
-      <div class="articles-empty">
-        <strong>Could not load reports</strong>
-        <p>Try refreshing the page.</p>
-      </div>`;
-  }
+function acceptCookie() {
+  try { localStorage.setItem('cookie_consent','accepted'); } catch(e){}
+  document.getElementById('cookie-bar').hidden = true;
 }
-
-loadArticles();
+function dismissCookie() {
+  try { localStorage.setItem('cookie_consent','declined'); } catch(e){}
+  document.getElementById('cookie-bar').hidden = true;
+}
 
 // FAQ
 function toggleFaq(btn) {
-  const item = btn.parentElement;
+  const item = btn.closest('.faq-item');
   item.classList.toggle('open');
 }
 
 // Modals
-function openModal(type) {
-  document.getElementById('modal-' + type).classList.add('open');
-  document.body.style.overflow = 'hidden';
+function openModal(id) {
+  document.getElementById('modal-'+id).hidden = false;
 }
-function closeModal(type) {
-  document.getElementById('modal-' + type).classList.remove('open');
-  document.body.style.overflow = '';
+function closeModal(id) {
+  document.getElementById('modal-'+id).hidden = true;
 }
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.classList.remove('open');
-      document.body.style.overflow = '';
-    }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === el) el.hidden = true;
   });
 });
-
-// Cookie banner
-const cookieKey = 'fcb_cookie_consent';
-if (localStorage.getItem(cookieKey)) {
-  document.getElementById('cookie-banner').classList.add('hidden');
-}
-function acceptCookies() {
-  localStorage.setItem(cookieKey, 'accepted');
-  document.getElementById('cookie-banner').classList.add('hidden');
-}
-function declineCookies() {
-  localStorage.setItem(cookieKey, 'declined');
-  document.getElementById('cookie-banner').classList.add('hidden');
-}
 </script>
 
-</body>
-</html>
+</body></html>
