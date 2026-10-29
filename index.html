@@ -911,6 +911,155 @@ footer {
   </div>
 </section>
 
+<!-- WHY FOURCONDITIONBOT -->
+<section>
+  <div class="wrap">
+    <div class="section-label">Why it works</div>
+    <h2>Fewer signals. Better signals.</h2>
+    <p class="section-sub">Most alert tools spam you with noise. FourConditionBot does the opposite.</p>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">🎯</div>
+        <div class="feat-title">High-conviction only</div>
+        <div class="feat-desc">Requiring four conditions simultaneously means you only hear about setups where multiple independent factors agree. One indicator alone is noise.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔬</div>
+        <div class="feat-title">Independent signal families</div>
+        <div class="feat-desc">Price trend, momentum, and volatility are measured separately. They don't all move together — so when all three align, it actually means something.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🕐</div>
+        <div class="feat-title">Scans every 30 minutes</div>
+        <div class="feat-desc">The bot runs continuously during US market hours so you don't have to watch charts. Setups appear and disappear fast — you get notified the moment conditions align.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧠</div>
+        <div class="feat-title">You make the final call</div>
+        <div class="feat-desc">Signals are a starting point, not an instruction. The bot finds the setup; you decide whether it fits your thesis, your position size, and your timing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE EXAMPLE -->
+<section>
+  <div class="wrap">
+    <div class="section-label">Under the hood</div>
+    <h2>What actually happens when a signal fires</h2>
+    <p class="section-sub">Here's a real walkthrough of how the bot evaluates a stock, condition by condition.</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--card-shadow)">
+      <!-- Header -->
+      <div style="background:var(--hero-bg);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#5a6a84;margin-bottom:4px">Signal evaluation · Example</div>
+          <div style="font-size:22px;font-weight:600;color:#e8ecf4;letter-spacing:-0.02em;font-family:var(--font-mono)">AAPL &nbsp;<span style="color:#22c55e;font-size:14px">● PASS</span></div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:24px;font-weight:500;color:#e8ecf4">$171.48</div>
+      </div>
+
+      <!-- Steps -->
+      <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">1</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <div style="font-weight:600;font-size:14px">Price below 20-day Moving Average</div>
+              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
+            </div>
+            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">The bot fetches 20 days of closing prices and calculates the average. <span style="font-family:var(--font-mono);color:var(--fg)">20MA = $174.32</span>. Current price <span style="font-family:var(--font-mono);color:var(--fg)">$171.48</span> is below it — the stock has pulled back from its short-term trend. ✓</div>
+          </div>
+        </div>
+
+        <div style="height:1px;background:var(--border)"></div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">2</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <div style="font-weight:600;font-size:14px">RSI (14) below 50</div>
+              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
+            </div>
+            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">RSI measures momentum over the last 14 candles. <span style="font-family:var(--font-mono);color:var(--fg)">RSI = 43.7</span> — sellers have had more control than buyers recently, but it's not a full crash. Below 50 means momentum is weakened without being extreme. ✓</div>
+          </div>
+        </div>
+
+        <div style="height:1px;background:var(--border)"></div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">3</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <div style="font-weight:600;font-size:14px">Near lower Bollinger Band</div>
+              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
+            </div>
+            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">Bollinger Bands are calculated using the 20MA ± 2 standard deviations. <span style="font-family:var(--font-mono);color:var(--fg)">Lower band = $169.20</span>. Price at $171.48 is within 1.3% of it — statistically stretched to the downside, meaning the move may be overdone. ✓</div>
+          </div>
+        </div>
+
+        <div style="height:1px;background:var(--border)"></div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">4</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <div style="font-weight:600;font-size:14px">All smart filters pass</div>
+              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
+            </div>
+            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">Earnings are 34 days away (outside the 5-day blackout). Price is 4.2% above its 52-week low. The stock is only 2.1% below its 200SMA — well within the 8% trend gate. EPS growth is positive. Price is above $1. All filters clear. ✓</div>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div style="background:rgba(13,156,82,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-weight:600;font-size:14px;color:#22c55e">Signal fires 🚀</div>
+            <div style="font-size:12.5px;color:var(--fg2);margin-top:2px">Telegram message sent · AAPL · Strategy 4 thresholds applied</div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--fg3)">4/4 conditions · 0 filters triggered</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNAL PERFORMANCE -->
+<section>
+  <div class="wrap">
+    <div class="section-label">Track record</div>
+    <h2>Signal performance</h2>
+    <p class="section-sub">Monthly reports are auto-generated on the 1st of each month, analyzing how past signals performed. Updated as history builds.</p>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:28px;text-align:center;box-shadow:var(--card-shadow)">
+      <div style="font-size:36px;margin-bottom:12px">📊</div>
+      <div style="font-weight:600;font-size:15px;margin-bottom:6px">Reports published monthly</div>
+      <div style="color:var(--fg2);font-size:13.5px;max-width:420px;margin:0 auto">Each report covers which signals fired, how the stock moved in the following sessions, and what the hit rate looked like. Find them at <a href="https://fourcondition.app" style="color:var(--accent)">fourcondition.app</a>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section>
+  <div class="wrap">
+    <div class="section-label">About</div>
+    <h2>Built by one person.</h2>
+    <p class="section-sub">No team, no investors, no marketing budget.</p>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:28px;max-width:620px;box-shadow:var(--card-shadow)">
+      <p style="color:var(--fg2);font-size:14px;line-height:1.75;margin:0 0 16px">FourConditionBot started as a personal tool to remove emotion from trading. Instead of scrolling charts for hours looking for setups, the bot does the scanning — and only alerts when something actually meets the criteria.</p>
+      <p style="color:var(--fg2);font-size:14px;line-height:1.75;margin:0 0 20px">It's built and maintained by a solo developer and trader. The code is real, the signals are live, and the filters exist because I got burned by alerts that didn't account for earnings risk or stocks in freefall.</p>
+      <div style="display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:18px">👤</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Vladimir</div>
+          <div style="font-size:12.5px;color:var(--fg2)">Builder · <a href="mailto:fourconditionbot@gmail.com" style="color:var(--accent)">fourconditionbot@gmail.com</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FAQ -->
 <section id="faq">
   <div class="wrap">
