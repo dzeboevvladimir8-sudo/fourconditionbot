@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upgrade — FourConditionBot</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap">
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<style>
+:root {
+  --bg: #0b0f1a;
+  --bg2: #131929;
+  --bg3: #1a2235;
+  --fg: #e8ecf4;
+  --fg2: #8a97a8;
+  --fg3: #4a5568;
+  --border: rgba(255,255,255,0.09);
+  --accent: #4f83f0;
+  --accent-dim: #1a2847;
+  --green: #22c55e;
+  --green-dim: #0d2818;
+  --amber: #fbbf24;
+  --purple: #a78bfa;
+  --purple-dim: #1e1535;
+  --font: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+}
+.nav-logo {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--fg);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo span { color: var(--accent); }
+.nav-back {
+  font-size: 13px;
+  color: var(--fg2);
+  text-decoration: none;
+}
+.nav-back:hover { color: var(--fg); }
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 64px 24px 48px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.hero-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-size: clamp(26px, 5vw, 38px);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.hero p {
+  color: var(--fg2);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* TELEGRAM LOGIN */
+.tg-section {
+  max-width: 480px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+.tg-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+.tg-card.connected {
+  border-color: var(--green);
+}
+.tg-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.tg-sub {
+  color: var(--fg2);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.tg-user {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 14px;
+}
+.tg-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  overflow: hidden;
+}
+.tg-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.tg-name { font-weight: 600; font-size: 14px; }
+.tg-id { font-size: 12px; color: var(--fg2); font-family: var(--font-mono); }
+
+/* PLANS */
+.plans {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.plan-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  transition: border-color .2s;
+}
+.plan-card.featured {
+  border-color: var(--accent);
+}
+.plan-badge {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.plan-header {}
+.plan-name {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg2);
+  margin-bottom: 8px;
+}
+.plan-price {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.plan-price sup { font-size: 18px; vertical-align: super; }
+.plan-price span { font-size: 14px; font-weight: 400; color: var(--fg2); }
+.plan-desc {
+  color: var(--fg2);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+.plan-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--fg2);
+}
+.plan-features li .check {
+  color: var(--green);
+  font-size: 14px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.plan-features li strong { color: var(--fg); }
+.plan-btn {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border-radius: 8px;
+  border: none;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  text-align: center;
+}
+.plan-btn:hover { opacity: .88; transform: translateY(-1px); }
+.plan-btn:active { transform: translateY(0); }
+.plan-btn.primary { background: var(--accent); color: #fff; }
+.plan-btn.secondary { background: var(--purple); color: #fff; }
+.plan-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+.plan-card.free-card {
+  border-style: dashed;
+  opacity: .7;
+}
+.plan-btn.free-btn {
+  background: var(--bg3);
+  color: var(--fg2);
+  cursor: default;
+}
+.plan-btn.free-btn:hover { opacity: 1; transform: none; }
+
+/* LOGIN REQUIRED NOTICE */
+.login-notice {
+  font-size: 12px;
+  color: var(--fg3);
+  text-align: center;
+  margin-top: -4px;
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px;
+  text-align: center;
+  color: var(--fg3);
+  font-size: 12.5px;
+}
+footer a { color: var(--fg2); text-decoration: none; }
+footer a:hover { color: var(--fg); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Four<span>Condition</span>Bot</a>
+  <a class="nav-back" href="index.html">← Back to home</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Upgrade</div>
+  <h1>Get more from your signals</h1>
+  <p>Unlock more markets, smarter filters, and deeper tools. Cancel anytime.</p>
+</div>
+
+<!-- TELEGRAM LOGIN -->
+<div class="tg-section">
+  <div class="tg-card" id="tg-card">
+    <div class="tg-title">Step 1 — Connect your Telegram</div>
+    <div class="tg-sub">So we know which account to upgrade. Your chat ID is never shared.</div>
+    <script async src="https://telegram.org/js/telegram-widget.js?22"
+      data-telegram-login="FourConditionBot"
+      data-size="large"
+      data-onauth="onTelegramAuth(user)"
+      data-request-access="write">
+    </script>
+    <div class="tg-user" id="tg-user">
+      <div class="tg-avatar" id="tg-avatar">👤</div>
+      <div>
+        <div class="tg-name" id="tg-name"></div>
+        <div class="tg-id" id="tg-id"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANS -->
+<div class="plans">
+
+  <!-- FREE -->
+  <div class="plan-card free-card">
+    <div class="plan-header">
+      <div class="plan-name">Free</div>
+      <div class="plan-price"><sup>$</sup>0<span>/mo</span></div>
+      <div class="plan-desc">The basics, forever free.</div>
+    </div>
+    <ul class="plan-features">
+      <li><span class="check">✓</span><div><strong>150 stocks</strong> — US market</div></li>
+      <li><span class="check">✓</span><div><strong>1 strategy</strong> from quiz</div></li>
+      <li><span class="check">✓</span><div><strong>10 watchlist slots</strong></div></li>
+      <li><span class="check">✓</span><div>Live Telegram alerts</div></li>
+      <li><span class="check">✓</span><div>4-condition signal logic</div></li>
+    </ul>
+    <button class="plan-btn free-btn" disabled>Current plan</button>
+  </div>
+
+  <!-- PRO -->
+  <div class="plan-card featured">
+    <div class="plan-badge">Most popular</div>
+    <div class="plan-header">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price"><sup>$</sup>5<span>/mo</span></div>
+      <div class="plan-desc">More markets, more control.</div>
+    </div>
+    <ul class="plan-features">
+      <li><span class="check">✓</span><div><strong>300+ stocks</strong> — US market</div></li>
+      <li><span class="check">✓</span><div><strong>Crypto + London + Asia</strong> markets</div></li>
+      <li><span class="check">✓</span><div><strong>All 10 strategies</strong>, switch anytime</div></li>
+      <li><span class="check">✓</span><div><strong>50 watchlist slots</strong></div></li>
+      <li><span class="check">✓</span><div>Signal history — <code>/history TICKER</code></div></li>
+      <li><span class="check">✓</span><div>Weekly summary digest</div></li>
+    </ul>
+    <button class="plan-btn primary" id="pro-btn" onclick="checkout('pro')" disabled>
+      Upgrade to Pro
+    </button>
+    <div class="login-notice" id="pro-notice">Connect Telegram above first</div>
+  </div>
+
+  <!-- ELITE -->
+  <div class="plan-card">
+    <div class="plan-header">
+      <div class="plan-name">Elite</div>
+      <div class="plan-price"><sup>$</sup>10<span>/mo</span></div>
+      <div class="plan-desc">Full power, priority access.</div>
+    </div>
+    <ul class="plan-features">
+      <li><span class="check">✓</span><div>Everything in Pro</div></li>
+      <li><span class="check">✓</span><div><strong>Custom thresholds</strong> — adjust RSI, MA, BB</div></li>
+      <li><span class="check">✓</span><div><strong>Priority alerts</strong> — 30 min early</div></li>
+      <li><span class="check">✓</span><div><strong>Unlimited watchlist</strong></div></li>
+      <li><span class="check">✓</span><div><strong>Portfolio P&L tracker</strong></div></li>
+      <li><span class="check">✓</span><div>Direct support from Vladimir</div></li>
+      <li><span class="check">✓</span><div>Early access to new features</div></li>
+    </ul>
+    <button class="plan-btn secondary" id="elite-btn" onclick="checkout('elite')" disabled>
+      Upgrade to Elite
+    </button>
+    <div class="login-notice" id="elite-notice">Connect Telegram above first</div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Questions? <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a> &nbsp;·&nbsp; <a href="index.html">Home</a></p>
+  <p style="margin-top:8px">Payments processed by <a href="https://paddle.com" target="_blank">Paddle</a>. Cancel anytime from your Telegram bot.</p>
+</footer>
+
+<script>
+// ── PADDLE INIT ──
+// Replace with your actual client-side token
+Paddle.Initialize({
+  token: 'live_b4f087e155debbd968033ac7144',
+  environment: 'sandbox'
+});
+
+const PRICES = {
+  pro:   'pri_01m6ev4r227s4hsb7khn53j4jd',
+  elite: 'pri_01m6ev60vv2bsmrvrfr9x9r6zx'
+};
+
+let telegramUser = null;
+
+// ── TELEGRAM AUTH CALLBACK ──
+function onTelegramAuth(user) {
+  telegramUser = user;
+
+  // Show connected state
+  const card = document.getElementById('tg-card');
+  card.classList.add('connected');
+
+  const userEl = document.getElementById('tg-user');
+  userEl.style.display = 'flex';
+
+  document.getElementById('tg-name').textContent =
+    [user.first_name, user.last_name].filter(Boolean).join(' ');
+  document.getElementById('tg-id').textContent = 'ID: ' + user.id;
+
+  if (user.photo_url) {
+    document.getElementById('tg-avatar').innerHTML =
+      `<img src="${user.photo_url}" alt="">`;
+  }
+
+  // Enable checkout buttons
+  document.getElementById('pro-btn').disabled = false;
+  document.getElementById('elite-btn').disabled = false;
+  document.getElementById('pro-notice').style.display = 'none';
+  document.getElementById('elite-notice').style.display = 'none';
+}
+
+// ── CHECKOUT ──
+function checkout(plan) {
+  if (!telegramUser) return;
+
+  Paddle.Checkout.open({
+    items: [{ priceId: PRICES[plan], quantity: 1 }],
+    customer: {
+      email: '',  // Paddle will ask for email
+    },
+    customData: {
+      telegram_id:        String(telegramUser.id),
+      telegram_username:  telegramUser.username || '',
+      telegram_name:      [telegramUser.first_name, telegramUser.last_name].filter(Boolean).join(' '),
+      plan:               plan
+    },
+    successUrl: 'https://dzeboevvladimir8-sudo.github.io/fourconditionbot/success.html'
+  });
+}
+</script>
+</body>
+</html>
