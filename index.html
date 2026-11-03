@@ -1158,8 +1158,9 @@ footer {
   <div class="footer-inner">
     <span class="footer-left">© 2026 FourConditionBot · Not financial advice</span>
     <div class="footer-links">
-      <a href="#" onclick="openModal('terms');return false">Terms</a>
-      <a href="#" onclick="openModal('privacy');return false">Privacy</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/refunds/">Refunds</a>
       <a href="mailto:fourconditionbot@gmail.com">Contact</a>
     </div>
   </div>
@@ -1258,5 +1259,7 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', function(e) {
     if (e.target === el) el.hidden = true;
   });
+});
+</script>
 });
 </script>
