@@ -6,7 +6,6 @@
 <title>Upgrade — FourConditionBot</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap">
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <style>
 :root {
   --bg: #0b0f1a;
@@ -344,7 +343,7 @@ footer a:hover { color: var(--fg); }
 
 <div class="hero">
   <div class="hero-label">Upgrade</div>
-  <h1>Get more from your signals</h1>
+  <h1>Get more from your screener</h1>
   <p>Unlock more markets, smarter filters, and deeper tools. Cancel anytime.</p>
 </div>
 
@@ -353,7 +352,7 @@ footer a:hover { color: var(--fg); }
   <div class="tg-card" id="tg-card">
     <div class="tg-title">Step 1 — Enter your Telegram username</div>
     <div class="tg-sub">This is your <strong>@username</strong> — not your display name. Find it in Telegram → Settings → Username.</div>
-    <div class="tg-input-row">
+    <div class="tg-input-row" id="tg-input-row">
       <div class="tg-input-wrap">
         <span class="tg-at">@</span>
         <input
@@ -388,12 +387,11 @@ footer a:hover { color: var(--fg); }
     <div class="plan-header">
       <div class="plan-name">Free</div>
       <div class="plan-price"><sup>$</sup>0<span>/mo</span></div>
-      <div class="plan-desc">The basics, forever free.</div>
+      <div class="plan-desc">The basics, always free.</div>
     </div>
     <ul class="plan-features">
-      <li><span class="check">✓</span><div><strong>150 stocks</strong> — US market</div></li>
+      <li><span class="check">✓</span><div><strong>150 stock</strong> watchlist</div></li>
       <li><span class="check">✓</span><div><strong>1 strategy</strong> from quiz</div></li>
-      <li><span class="check">✓</span><div><strong>10 watchlist slots</strong></div></li>
       <li><span class="check">✓</span><div>Live Telegram alerts</div></li>
       <li><span class="check">✓</span><div>4-condition signal logic</div></li>
     </ul>
@@ -409,10 +407,9 @@ footer a:hover { color: var(--fg); }
       <div class="plan-desc">More markets, more control.</div>
     </div>
     <ul class="plan-features">
-      <li><span class="check">✓</span><div><strong>300+ stocks</strong> — US market</div></li>
+      <li><span class="check">✓</span><div><strong>300 stock</strong> watchlist</div></li>
       <li><span class="check">✓</span><div><strong>Crypto + London + Asia</strong> markets</div></li>
       <li><span class="check">✓</span><div><strong>All 10 strategies</strong>, switch anytime</div></li>
-      <li><span class="check">✓</span><div><strong>50 watchlist slots</strong></div></li>
       <li><span class="check">✓</span><div>Signal history — <code>/history TICKER</code></div></li>
       <li><span class="check">✓</span><div>Weekly summary digest</div></li>
     </ul>
@@ -431,10 +428,10 @@ footer a:hover { color: var(--fg); }
     </div>
     <ul class="plan-features">
       <li><span class="check">✓</span><div>Everything in Pro</div></li>
+      <li><span class="check">✓</span><div><strong>999 stock</strong> watchlist</div></li>
       <li><span class="check">✓</span><div><strong>Custom thresholds</strong> — adjust RSI, MA, BB</div></li>
       <li><span class="check">✓</span><div><strong>Priority alerts</strong> — 30 min early</div></li>
-      <li><span class="check">✓</span><div><strong>Unlimited watchlist</strong></div></li>
-      <li><span class="check">✓</span><div><strong>Portfolio P&L tracker</strong></div></li>
+      <li><span class="check">✓</span><div><strong>Portfolio P&amp;L tracker</strong></div></li>
       <li><span class="check">✓</span><div>Direct support from Vladimir</div></li>
       <li><span class="check">✓</span><div>Early access to new features</div></li>
     </ul>
@@ -447,23 +444,11 @@ footer a:hover { color: var(--fg); }
 </div>
 
 <footer>
-  <p>Questions? <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a> &nbsp;·&nbsp; <a href="index.html">Home</a></p>
-  <p style="margin-top:8px">Payments processed by <a href="https://paddle.com" target="_blank">Paddle</a>. Cancel anytime from your Telegram bot.</p>
+  <p>Questions? <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a> &nbsp;·&nbsp; <a href="../">Home</a></p>
+  <p style="margin-top:8px">Payments processed by <a href="https://lemonsqueezy.com" target="_blank">Lemon Squeezy</a>. Cancel anytime from your Telegram bot.</p>
 </footer>
 
 <script>
-// ── PADDLE INIT ──
-window.addEventListener('load', () => {
-  Paddle.Initialize({
-    token: 'live_b4f087e155debbd968033ac7144'
-  });
-});
-
-const PRICES = {
-  pro:   'pri_01m6ev4r227s4hsb7khn53j4jd',
-  elite: 'pri_01m6ev60vv2bsmrvrfr9x9r6zx'
-};
-
 let telegramUser = null;
 
 // ── USERNAME CONFIRM ──
@@ -485,24 +470,19 @@ function confirmUsername() {
 
   telegramUser = { username };
 
-  // Show confirmed state
   document.getElementById('tg-card').classList.add('connected');
   document.getElementById('tg-name').textContent = '@' + username;
   document.getElementById('tg-user').style.display = 'flex';
-  document.getElementById('tg-input-row') && (document.getElementById('tg-input-row').style.display = 'none');
+  document.getElementById('tg-input-row').style.display = 'none';
   hint.textContent = '';
   input.disabled = true;
-  document.querySelector('.tg-confirm-btn').disabled = true;
-  document.querySelector('.tg-confirm-btn').style.opacity = '.4';
 
-  // Enable checkout buttons
   document.getElementById('pro-btn').disabled = false;
   document.getElementById('elite-btn').disabled = false;
   document.getElementById('pro-notice').style.display = 'none';
   document.getElementById('elite-notice').style.display = 'none';
 }
 
-// Allow pressing Enter in the input
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tg-username-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') confirmUsername();
@@ -510,17 +490,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── CHECKOUT ──
+// Replace these with your real Lemon Squeezy checkout URLs once your products are created
+const CHECKOUT_URLS = {
+  pro:   'https://fourconditionbot.lemonsqueezy.com/checkout/buy/REPLACE_PRO_ID',
+  elite: 'https://fourconditionbot.lemonsqueezy.com/checkout/buy/REPLACE_ELITE_ID'
+};
+
 function checkout(plan) {
   if (!telegramUser) return;
-
-  Paddle.Checkout.open({
-    items: [{ priceId: PRICES[plan], quantity: 1 }],
-    customData: {
-      telegram_username: telegramUser.username,
-      plan:              plan
-    },
-    successUrl: 'https://fourcondition.app/success/'
-  });
+  const url = new URL(CHECKOUT_URLS[plan]);
+  url.searchParams.set('checkout[custom][telegram_username]', telegramUser.username);
+  url.searchParams.set('checkout[custom][plan]', plan);
+  window.location.href = url.toString();
 }
 </script>
 </body>
