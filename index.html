@@ -744,7 +744,7 @@ footer {
         <div class="cond-icon">🛡️</div>
         <div>
           <div class="cond-title">Passes all active filters</div>
-          <div class="cond-desc">Earnings blackout, trend gate, 52-week low guard, EPS trend, and penny stock filter must all clear.</div>
+          <div class="cond-desc">Earnings blackout, trend gate, 52-week low guard, velocity guard, EPS trend, and penny stock filter must all clear.</div>
         </div>
       </div>
     </div>
@@ -760,7 +760,7 @@ footer {
       <div class="filter-row">
         <span class="filter-icon">📉</span>
         <span class="filter-name">52-week low guard</span>
-        <span class="filter-desc">Blocks signals within 5% of a 52-week low or recent 10-session lows</span>
+        <span class="filter-desc">Blocks signals within 8% of a 52-week low or recent 10-session lows</span>
       </div>
       <div class="filter-row">
         <span class="filter-icon">📏</span>
@@ -781,6 +781,11 @@ footer {
         <span class="filter-icon">⏱️</span>
         <span class="filter-name">5-day signal cooldown</span>
         <span class="filter-desc">Suppresses repeat alerts on the same ticker for 5 days — unless the 20MA shifts by more than 10%, signalling a meaningfully different setup</span>
+      </div>
+      <div class="filter-row">
+        <span class="filter-icon">🚨</span>
+        <span class="filter-name">Velocity guard</span>
+        <span class="filter-desc">Blocks falling-knife setups: suppresses if price is more than 12% below the 20MA, or if the 5-session decline exceeds 15% — signals where the headroom looks attractive but the stock is in freefall</span>
       </div>
     </div>
   </div>
@@ -1033,7 +1038,7 @@ footer {
               <div style="font-weight:600;font-size:14px">All smart filters pass</div>
               <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
             </div>
-            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">Earnings are 34 days away (outside the 5-day blackout). Price is 4.2% above its 52-week low. The stock is only 2.1% below its 200SMA — well within the 8% trend gate. EPS growth is positive. Price is above $1. All filters clear. ✓</div>
+            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">Earnings are 34 days away (outside the 5-day blackout). Price is 4.2% above its 52-week low (clears the 8% guard). The stock is 2.1% below its 200SMA — within the 8% trend gate. Price is 3.8% below the 20MA — well under the 12% velocity limit. 5-day decline is 1.2% — far below the 15% velocity cap. EPS growth is positive. Price above $1. All filters clear. ✓</div>
           </div>
         </div>
 
@@ -1127,7 +1132,7 @@ footer {
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">How do signals actually work? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">Every 30 minutes, the bot scans your entire watchlist. US stocks are scanned during market hours; crypto runs 24/7. If an asset passes all four conditions (price below 20MA, RSI below 50, near lower Bollinger Band, and all smart filters) you get a Telegram message with the details. A 5-day cooldown prevents the same ticker from firing repeatedly on the same setup. Your personal strategy adjusts which thresholds are used.</div>
+        <div class="faq-a">Every 30 minutes, the bot scans your entire watchlist. US stocks are scanned during market hours; crypto runs 24/7. If an asset passes all four conditions (price below 20MA, RSI below 50, near lower Bollinger Band) and clears every smart filter — earnings blackout, trend gate, 52-week low guard, velocity guard, EPS trend, and penny filter — you get a Telegram message. The velocity guard is new: it blocks stocks that look cheap on headroom math but are actually in freefall (price >12% below the 20MA or a >15% drop in 5 sessions). A 5-day cooldown prevents the same ticker firing repeatedly on the same setup. Your personal strategy adjusts which thresholds are used.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What is the quiz and why does it matter? <span class="faq-arrow">▾</span></button>
