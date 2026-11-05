@@ -636,6 +636,73 @@ footer {
   h2 { font-size: 22px; }
   .strategies-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* MOBILE STICKY BOTTOM BAR */
+.mobile-bottom-bar {
+  display: none;
+}
+@media (max-width: 720px) {
+  .mobile-bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--hero-bg);
+    border-top: 1px solid var(--hero-border);
+    padding: 10px 16px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+    gap: 10px;
+    align-items: center;
+  }
+  .mobile-bottom-bar .btn-primary {
+    flex: 1;
+    justify-content: center;
+    font-size: 14px;
+    padding: 11px 12px;
+  }
+  .mobile-bottom-bar .btn-upgrade {
+    flex: 1;
+    justify-content: center;
+    font-size: 14px;
+    padding: 11px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    color: var(--hero-fg);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 7px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .mobile-bottom-bar .btn-upgrade:hover { background: rgba(255,255,255,0.07); }
+  /* push page content above the bar so footer isn't hidden */
+  body { padding-bottom: 72px; }
+}
+/* Mobile nav Plans link */
+.nav-plans-mobile {
+  display: none;
+}
+@media (max-width: 720px) {
+  .nav-plans-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding: 5px 10px;
+    border: 1px solid rgba(79,131,240,0.3);
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+}
 </style>
 
 <!-- NAV -->
@@ -647,6 +714,7 @@ footer {
       <a href="#strategies" class="hide-mobile">Strategies</a>
       <a href="#faq" class="hide-mobile">FAQ</a>
       <a href="upgrade/" class="hide-mobile" style="color:var(--hero-fg2);text-decoration:none;font-size:13.5px;font-weight:500">Upgrade ✦</a>
+      <a href="upgrade/" class="nav-plans-mobile">Plans ✦</a>
       <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Open Telegram →</a>
     </div>
   </div>
@@ -1298,3 +1366,9 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
   });
 });
 </script>
+
+<!-- MOBILE STICKY BOTTOM BAR -->
+<div class="mobile-bottom-bar">
+  <a href="upgrade/" class="btn-upgrade">Plans ✦</a>
+  <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Open Telegram →</a>
+</div>
