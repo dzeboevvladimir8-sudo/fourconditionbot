@@ -651,15 +651,15 @@ footer {
     <div>
       <div class="hero-eyebrow"><span class="hero-dot"></span>Live · Free to start · No noise</div>
       <h1>Stock screening built on <em>four conditions</em>, not hype.</h1>
-      <p class="hero-sub">FourConditionBot monitors 300+ stocks around the clock and notifies you on Telegram only when price, momentum, and volatility all align — filtered for your personal strategy.</p>
+      <p class="hero-sub">FourConditionBot monitors 500+ assets — US stocks, crypto, London and Asia markets — and notifies you on Telegram only when price, momentum, and volatility all align. Filtered for your personal strategy.</p>
       <div class="hero-actions">
         <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Start free on Telegram</a>
         <a href="#how" class="btn-ghost">See how it works</a>
       </div>
       <div class="hero-stats">
         <div>
-          <div class="hero-stat-n">300+</div>
-          <div class="hero-stat-l">Stocks monitored</div>
+          <div class="hero-stat-n">500+</div>
+          <div class="hero-stat-l">Assets monitored</div>
         </div>
         <div>
           <div class="hero-stat-n">4</div>
@@ -670,8 +670,8 @@ footer {
           <div class="hero-stat-l">Investment strategies</div>
         </div>
         <div>
-          <div class="hero-stat-n">Free</div>
-          <div class="hero-stat-l">to start</div>
+          <div class="hero-stat-n">24/7</div>
+          <div class="hero-stat-l">Crypto scanning</div>
         </div>
       </div>
     </div>
@@ -777,6 +777,11 @@ footer {
         <span class="filter-name">Penny stock filter</span>
         <span class="filter-desc">Removes any stock trading below $1.00 per share</span>
       </div>
+      <div class="filter-row">
+        <span class="filter-icon">⏱️</span>
+        <span class="filter-name">5-day signal cooldown</span>
+        <span class="filter-desc">Suppresses repeat alerts on the same ticker for 5 days — unless the 20MA shifts by more than 10%, signalling a meaningfully different setup</span>
+      </div>
     </div>
   </div>
 </section>
@@ -862,22 +867,22 @@ footer {
       <div class="feat-card">
         <div class="feat-icon">📋</div>
         <div class="feat-title">Personal watchlist</div>
-        <div class="feat-desc">Add up to 150 tickers with <code>/add</code>, remove with <code>/remove</code>, view live prices with <code>/status</code>. Supports multiple tickers in one command.</div>
+        <div class="feat-desc">Add up to 150 tickers with <code>/add</code>, remove with <code>/remove</code>, or wipe everything with <code>/remove all</code>. View live prices with <code>/status</code>.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">📦</div>
-        <div class="feat-title">Stock packs</div>
-        <div class="feat-desc">Pre-built watchlists for Tech, Finance, Health, Energy, and Universal sectors. Load any with <code>/packload tech</code>.</div>
+        <div class="feat-title">Stock &amp; crypto packs</div>
+        <div class="feat-desc">Pre-built watchlists for Tech, Finance, Health, Energy, and Universal sectors. Pro unlocks Crypto, London, and Asia packs.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">⚙️</div>
         <div class="feat-title">Per-user settings</div>
-        <div class="feat-desc">Adjust RSI threshold, Bollinger proximity, trend gate, earnings blackout days, ATR multiplier, and OBV lookback to match your style.</div>
+        <div class="feat-desc">Adjust RSI threshold, Bollinger proximity, trend gate, earnings blackout days, and ATR multiplier to match your style.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">🔇</div>
         <div class="feat-title">Ignore list</div>
-        <div class="feat-desc">Mute specific tickers you don't want to hear about with <code>/ignore AAPL</code>. Clear all with <code>/unignore</code>.</div>
+        <div class="feat-desc">Mute specific tickers you don't want to hear about with <code>/ignore AAPL</code>. Clear all ignored tickers with <code>/unignore</code>.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">🏆</div>
@@ -887,7 +892,22 @@ footer {
       <div class="feat-card">
         <div class="feat-icon">📰</div>
         <div class="feat-title">Monthly performance articles</div>
-        <div class="feat-desc">Auto-generated reports every month analyzing how past signals performed. Published at fourcondition.app.</div>
+        <div class="feat-desc">Auto-generated reports every month analyzing how past signals performed. Published at fourconditionbot.app.</div>
+      </div>
+      <div class="feat-card" style="border-color:var(--accent);background:var(--accent-dim)">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Signal history <span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 7px;border-radius:10px;border:1px solid var(--accent);margin-left:4px">Pro</span></div>
+        <div class="feat-desc">Review every signal that fired on your watchlist with <code>/history</code>. Filter by ticker to see its full track record.</div>
+      </div>
+      <div class="feat-card" style="border-color:var(--accent);background:var(--accent-dim)">
+        <div class="feat-icon">🌍</div>
+        <div class="feat-title">Global markets <span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 7px;border-radius:10px;border:1px solid var(--accent);margin-left:4px">Pro</span></div>
+        <div class="feat-desc">Track crypto (BTC, ETH, SOL and more), London-listed stocks, and Asia markets. Crypto scans run 24/7 — no waiting for market hours.</div>
+      </div>
+      <div class="feat-card" style="border-color:var(--accent);background:var(--accent-dim)">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Weekly digest <span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 7px;border-radius:10px;border:1px solid var(--accent);margin-left:4px">Pro</span></div>
+        <div class="feat-desc">Every Sunday, receive a summary of the week's signals across your watchlist. Manage it anytime with <code>/digest stop</code> or <code>/digest start</code>.</div>
       </div>
     </div>
 
@@ -896,6 +916,7 @@ footer {
       <div class="commands-grid" style="margin-top:12px">
         <div class="cmd-row"><div><div class="cmd-code">/add TSLA AAPL</div><div class="cmd-desc">Add tickers to watchlist</div></div></div>
         <div class="cmd-row"><div><div class="cmd-code">/remove TSLA</div><div class="cmd-desc">Remove from watchlist</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/remove all</div><div class="cmd-desc">Clear entire watchlist at once</div></div></div>
         <div class="cmd-row"><div><div class="cmd-code">/list</div><div class="cmd-desc">View your watchlist</div></div></div>
         <div class="cmd-row"><div><div class="cmd-code">/status</div><div class="cmd-desc">Live prices for all tickers</div></div></div>
         <div class="cmd-row"><div><div class="cmd-code">/profile</div><div class="cmd-desc">View your assigned strategy</div></div></div>
@@ -906,6 +927,10 @@ footer {
         <div class="cmd-row"><div><div class="cmd-code">/topsignal</div><div class="cmd-desc">Best current setups</div></div></div>
         <div class="cmd-row"><div><div class="cmd-code">/ignore COIN</div><div class="cmd-desc">Mute a ticker</div></div></div>
         <div class="cmd-row"><div><div class="cmd-code">/resetsettings</div><div class="cmd-desc">Reset to strategy defaults</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/history</div><div class="cmd-desc">Signal history (Pro &amp; Elite)</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/digest stop</div><div class="cmd-desc">Pause weekly digest</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/digest start</div><div class="cmd-desc">Resume weekly digest</div></div></div>
+        <div class="cmd-row"><div><div class="cmd-code">/plan</div><div class="cmd-desc">View your current plan</div></div></div>
       </div>
     </div>
   </div>
@@ -931,7 +956,7 @@ footer {
       <div class="feat-card">
         <div class="feat-icon">🕐</div>
         <div class="feat-title">Scans every 30 minutes</div>
-        <div class="feat-desc">The bot runs continuously during US market hours so you don't have to watch charts. Setups appear and disappear fast — you get notified the moment conditions align.</div>
+        <div class="feat-desc">US stocks scan continuously during market hours. Crypto runs 24/7 — including nights, weekends, and holidays — so you never miss a Bitcoin setup because the NYSE was closed.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">🧠</div>
@@ -1102,7 +1127,7 @@ footer {
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">How do signals actually work? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">Every 30 minutes during US market hours, the bot scans your entire watchlist. If a stock passes all four core conditions (price below 20MA, RSI below 50, near lower Bollinger Band, and all smart filters) it sends you a Telegram message with the details. Your personal strategy adjusts which thresholds are used.</div>
+        <div class="faq-a">Every 30 minutes, the bot scans your entire watchlist. US stocks are scanned during market hours; crypto runs 24/7. If an asset passes all four conditions (price below 20MA, RSI below 50, near lower Bollinger Band, and all smart filters) you get a Telegram message with the details. A 5-day cooldown prevents the same ticker from firing repeatedly on the same setup. Your personal strategy adjusts which thresholds are used.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What is the quiz and why does it matter? <span class="faq-arrow">▾</span></button>
@@ -1110,11 +1135,11 @@ footer {
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Is it free? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">The core bot is free — you get live alerts, 150 stocks on your watchlist, and 1 strategy from the quiz. Pro ($5/mo) adds more markets, all 10 strategies, and signal history. Elite ($10/mo) unlocks custom thresholds, priority alerts, and portfolio tracking. <a href="upgrade/" style="color:var(--accent)">See all plans →</a></div>
+        <div class="faq-a">The core bot is free — you get live alerts, up to 150 stocks on your watchlist, and all 10 strategies to switch between anytime. Pro ($5/mo) adds crypto, London &amp; Asia markets, signal history, and a weekly digest. Elite ($10/mo) expands your watchlist to 999 slots and raises all limits. <a href="upgrade/" style="color:var(--accent)">See all plans →</a></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Which stocks does it cover? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">You build your own watchlist from any US-listed stock. The bot comes with sector packs (Tech, Finance, Health, Energy, Universal) to get you started quickly. Data is sourced from Yahoo Finance and Polygon.io.</div>
+        <div class="faq-a">You build your own watchlist from any US-listed stock, crypto (BTC-USD, ETH-USD, SOL-USD and more), London-listed stocks (.L), or Asia markets (.HK, .T). Sector packs (Tech, Finance, Health, Energy, Universal) are free. Crypto, London, and Asia packs require Pro. Data is sourced from Yahoo Finance and Polygon.io.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What data is stored about me? <span class="faq-arrow">▾</span></button>
