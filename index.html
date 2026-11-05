@@ -1,5 +1,6 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FourConditionBot</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap">
 
 <style>
@@ -361,16 +362,22 @@ h2 {
 }
 .filter-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: baseline;
+  gap: 10px;
   padding: 13px 18px;
   border-bottom: 1px solid var(--border);
   font-size: 13.5px;
+  flex-wrap: wrap;
 }
 .filter-row:last-child { border-bottom: none; }
-.filter-icon { font-size: 14px; flex-shrink: 0; }
-.filter-name { font-weight: 500; flex: 1; }
-.filter-desc { color: var(--fg2); font-size: 12.5px; }
+.filter-icon { font-size: 14px; flex-shrink: 0; align-self: flex-start; margin-top: 1px; }
+.filter-name { font-weight: 500; white-space: nowrap; }
+.filter-desc { color: var(--fg2); font-size: 12.5px; flex: 1; min-width: 160px; }
+@media (max-width: 480px) {
+  .filter-row { gap: 8px; padding: 12px 14px; }
+  .filter-name { font-size: 13px; }
+  .filter-desc { font-size: 12px; width: 100%; min-width: 0; flex-basis: 100%; margin-left: 22px; }
+}
 
 /* QUIZ / STRATEGIES */
 .strategies-grid {
