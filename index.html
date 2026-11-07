@@ -845,7 +845,7 @@ footer {
       <div class="filter-row">
         <span class="filter-icon">💹</span>
         <span class="filter-name">EPS trend filter</span>
-        <span class="filter-desc">Requires positive forward earnings growth (with whitelist exceptions for high-growth names)</span>
+        <span class="filter-desc">Requires positive forward earnings growth (with whitelist exceptions for high-growth names). Crypto assets are exempt — earnings data doesn't apply.</span>
       </div>
       <div class="filter-row">
         <span class="filter-icon">🚫</span>
@@ -856,6 +856,11 @@ footer {
         <span class="filter-icon">⏱️</span>
         <span class="filter-name">5-day signal cooldown</span>
         <span class="filter-desc">Suppresses repeat alerts on the same ticker for 5 days — unless the 20MA shifts by more than 10%, signalling a meaningfully different setup</span>
+      </div>
+      <div class="filter-row">
+        <span class="filter-icon">🔁</span>
+        <span class="filter-name">Daily signal cap</span>
+        <span class="filter-desc">If the same ticker fires more than 3 times in a single day, further alerts are automatically suppressed until the next day — prevents alert fatigue from fast-moving assets</span>
       </div>
       <div class="filter-row">
         <span class="filter-icon">🚨</span>
@@ -1207,7 +1212,7 @@ footer {
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">How do signals actually work? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">Every 30 minutes, the bot scans your entire watchlist. US stocks are scanned during market hours; crypto runs 24/7. If an asset passes all four conditions (price below 20MA, RSI below 50, near lower Bollinger Band) and clears every smart filter — earnings blackout, trend gate, 52-week low guard, velocity guard, EPS trend, and penny filter — you get a Telegram message. The velocity guard is new: it blocks stocks that look cheap on headroom math but are actually in freefall (price >12% below the 20MA or a >15% drop in 5 sessions). A 5-day cooldown prevents the same ticker firing repeatedly on the same setup. Your personal strategy adjusts which thresholds are used.</div>
+        <div class="faq-a">Every 30 minutes, the bot scans your entire watchlist. US stocks are scanned during market hours; crypto runs 24/7. If an asset passes all four conditions (price below 20MA, RSI below 50, near lower Bollinger Band) and clears every smart filter — earnings blackout, trend gate, 52-week low guard, velocity guard, EPS trend, and penny filter — you get a Telegram message. The velocity guard is new: it blocks stocks that look cheap on headroom math but are actually in freefall (price >12% below the 20MA or a >15% drop in 5 sessions). A 5-day cooldown prevents the same ticker firing repeatedly on the same setup, and a daily cap of 3 signals per ticker per day prevents alert fatigue from fast-moving assets like crypto. Your personal strategy adjusts which thresholds are used.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What is the quiz and why does it matter? <span class="faq-arrow">▾</span></button>
