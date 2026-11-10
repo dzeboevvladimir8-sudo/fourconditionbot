@@ -39,19 +39,52 @@
   onScrollNav();
   window.addEventListener('scroll', onScrollNav, { passive: true });
 
-  // Stagger children of [data-stagger] by index
+  // Children of [data-stagger] become reveals. data-stagger="3" restarts the delay every 3 items (one grid row);
+  // data-from on the group applies to every child.
   document.querySelectorAll('[data-stagger]').forEach(function (g) {
-    Array.prototype.forEach.call(g.children, function (c, i) { c.classList.add('reveal'); c.style.setProperty('--i', i); });
+    var cycle = parseInt(g.getAttribute('data-stagger'), 10) || 99, from = g.getAttribute('data-from');
+    Array.prototype.forEach.call(g.children, function (c, i) {
+      c.classList.add('reveal'); c.style.setProperty('--i', i % cycle);
+      if (from && !c.hasAttribute('data-from')) c.setAttribute('data-from', from);
+    });
   });
   var reveals = document.querySelectorAll('.reveal');
-  if (reduce || !('IntersectionObserver' in window)) {
-    reveals.forEach(function (el) { el.classList.add('in'); });
-  } else {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    reveals.forEach(function (el) { io.observe(el); });
-  }
+  if (reduce) reveals.forEach(function (el) { el.classList.add('in'); });
+  else (function () {
+
+  // Scroll-scrubbed reveals: position follows scroll both ways. Layout tops are measured with offsetTop
+  // (ignores transforms) so moving an element never feeds back into its own progress.
+  var items = Array.prototype.map.call(reveals, function (el) {
+    var from = el.getAttribute('data-from') || (el.classList.contains('glass') ? 'rise' : 'up');
+    return { el: el, i: parseFloat(el.style.getPropertyValue('--i')) || 0, from: from, top: 0 };
+  });
+  var layoutTop = function (el) { var t = 0; while (el) { t += el.offsetTop; el = el.offsetParent; } return t; };
+  var measure = function () { items.forEach(function (it) { it.top = layoutTop(it.el); }); };
+  var paint = function () {
+    var vh = window.innerHeight, y = window.scrollY;
+    items.forEach(function (it) {
+      var top = it.top - y;
+      if (top > vh + 200 && it.p === 0) return;                   // still far below and already hidden
+      var p = Math.min(1, Math.max(0, (vh * 0.98 - top - it.i * 45) / (vh * 0.32)));
+      if (p === it.p) return;
+      it.p = p;
+      var e = 1 - Math.pow(1 - p, 3), k = 1 - e, s = it.el.style;
+      if (it.from === 'left') s.translate = (-90 * k) + 'px 0';
+      else if (it.from === 'right') s.translate = (90 * k) + 'px 0';
+      else if (it.from === 'rise') { s.translate = '0 ' + (120 * k) + 'px'; s.scale = String(0.94 + 0.06 * e); }
+      else s.translate = '0 ' + (60 * k) + 'px';
+      s.opacity = String(e);
+      if (p > 0.5) it.el.classList.add('in');                      // one-way: triggers the in-card animations
+    });
+  };
+  measure(); paint();
+  var queued = false;
+  window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; paint(); }); } }, { passive: true });
+  var remeasure = function () { measure(); items.forEach(function (it) { it.p = -1; }); paint(); };
+  window.addEventListener('resize', remeasure);
+  window.addEventListener('load', remeasure);
+  if ('ResizeObserver' in window) new ResizeObserver(remeasure).observe(document.body);
+  })();
 
   // Ticks: rows inside [data-ticks] light up one after another once visible, then loop
   document.querySelectorAll('[data-ticks]').forEach(function (box) {
