@@ -49,8 +49,9 @@
     });
   });
   var reveals = document.querySelectorAll('.reveal');
-  if (reduce) reveals.forEach(function (el) { el.classList.add('in'); });
-  else (function () {
+  // Reduced motion (also the OS default when Windows "Animation effects" is off): fades only, no sliding.
+  var dist = reduce ? 0 : 1;
+  (function () {
 
   // Scroll-scrubbed reveals: position follows scroll both ways. Layout tops are measured with offsetTop
   // (ignores transforms) so moving an element never feeds back into its own progress.
@@ -69,9 +70,10 @@
       if (p === it.p) return;
       it.p = p;
       var e = 1 - Math.pow(1 - p, 3), k = 1 - e, s = it.el.style;
+      k *= dist;
       if (it.from === 'left') s.translate = (-90 * k) + 'px 0';
       else if (it.from === 'right') s.translate = (90 * k) + 'px 0';
-      else if (it.from === 'rise') { s.translate = '0 ' + (120 * k) + 'px'; s.scale = String(0.94 + 0.06 * e); }
+      else if (it.from === 'rise') { s.translate = '0 ' + (120 * k) + 'px'; s.scale = String(1 - 0.06 * k); }
       else s.translate = '0 ' + (60 * k) + 'px';
       s.opacity = String(e);
       if (p > 0.5) it.el.classList.add('in');                      // one-way: triggers the in-card animations
@@ -90,7 +92,6 @@
   document.querySelectorAll('[data-ticks]').forEach(function (box) {
     var rows = box.querySelectorAll('[data-tick]');
     var done = box.querySelector('[data-done]');
-    if (reduce) { rows.forEach(function (r) { r.classList.add('on'); }); if (done) done.classList.add('on'); return; }
     var run = function () {
       rows.forEach(function (r) { r.classList.remove('on'); }); if (done) done.classList.remove('on');
       rows.forEach(function (r, i) { setTimeout(function () { r.classList.add('on'); }, 500 + i * 450); });
@@ -102,9 +103,7 @@
     }).observe(box);
   });
 
-  if (reduce) return;
-
-  // Cursor spotlight
+  // Cursor spotlight (a glow, not movement — kept under reduced motion)
   document.querySelectorAll('.spot').forEach(function (el) {
     el.addEventListener('pointermove', function (e) {
       var r = el.getBoundingClientRect();
@@ -112,6 +111,8 @@
       el.style.setProperty('--my', (e.clientY - r.top) + 'px');
     });
   });
+
+  if (reduce) return;   // below: tilt, 3D scroll and parallax — the large motion reduced-motion users opt out of
 
   // 3D tilt toward cursor (mouse only)
   if (finePointer) {

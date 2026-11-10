@@ -178,10 +178,9 @@ p { margin: 0; }
 .doc .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Keep fades, ticker, chart drawing and glows; drop the large movement (slides, 3D, parallax, smooth jumps). */
   html { scroll-behavior: auto; }
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  .reveal { opacity: 1 !important; translate: none !important; scale: none !important; }
   .tilt { transform: none !important; }
-  .px, .draw { stroke-dashoffset: 0 !important; }
-  .dot { opacity: 1 !important; }
+  .intro { animation-name: introFade; }
+  @keyframes introFade { from { opacity: 0; } }
 }

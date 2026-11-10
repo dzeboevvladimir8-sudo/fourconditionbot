@@ -549,7 +549,6 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
     if (top < list.scrollTop || top + h > list.scrollTop + list.clientHeight) list.scrollTop = top - list.clientHeight / 2;
   };
   set(0);
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var start = function () { clearInterval(timer); timer = setInterval(function () { set(i + 1); }, 1400); };
   items.forEach(function (li, n) { li.addEventListener('mouseenter', function () { clearInterval(timer); set(n); }); });
   list.addEventListener('mouseleave', start);
