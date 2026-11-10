@@ -1,1379 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FourConditionBot</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap">
-
+<title>FourConditionBot — Stock &amp; crypto alerts on Telegram, only when four conditions align</title>
+<meta name="description" content="A Telegram bot that scans 500+ stocks and crypto every 30 minutes and alerts you only when price, momentum and volatility all line up. Free to start.">
+<link rel="canonical" href="https://fourcondition.app/">
+<meta name="theme-color" content="#0d1b2a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FourConditionBot">
+<meta property="og:url" content="https://fourcondition.app/">
+<meta property="og:title" content="FourConditionBot — alerts only when four conditions align">
+<meta property="og:description" content="Scans 500+ stocks and crypto. Messages you on Telegram only when price, momentum and volatility agree. Free to start.">
+<meta property="og:image" content="https://fourcondition.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FourConditionBot — four conditions, one alert">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<link rel="stylesheet" href="/style.css">
 <style>
-/* === TOKENS === */
-/* Layout: full-bleed dark hero, content in constrained columns, signal cards as the visual anchor */
-:root {
-  --bg: #f7f8fa;
-  --bg2: #ffffff;
-  --fg: #0f1117;
-  --fg2: #4a5568;
-  --fg3: #8a97a8;
-  --border: #e2e8f0;
-  --accent: #1a56db;
-  --accent-dim: #ebf0fd;
-  --green: #0d9c52;
-  --green-dim: #e6f7ee;
-  --amber: #d97706;
-  --amber-dim: #fef3cd;
-  --hero-bg: #0b0f1a;
-  --hero-fg: #e8ecf4;
-  --hero-fg2: #7a89a8;
-  --hero-border: rgba(255,255,255,0.08);
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
-  --font-display: 'DM Sans', system-ui, sans-serif;
-  --font-mono: 'DM Mono', 'Courier New', monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0b0f1a;
-    --bg2: #131929;
-    --fg: #e8ecf4;
-    --fg2: #8a97a8;
-    --fg3: #4a5568;
-    --border: rgba(255,255,255,0.09);
-    --accent: #4f83f0;
-    --accent-dim: #1a2847;
-    --green: #22c55e;
-    --green-dim: #0d2818;
-    --amber: #fbbf24;
-    --amber-dim: #2a1e05;
-    --hero-bg: #060810;
-    --hero-fg: #e8ecf4;
-    --hero-fg2: #5a6a84;
-    --hero-border: rgba(255,255,255,0.06);
-    --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0b0f1a;
-  --bg2: #131929;
-  --fg: #e8ecf4;
-  --fg2: #8a97a8;
-  --fg3: #4a5568;
-  --border: rgba(255,255,255,0.09);
-  --accent: #4f83f0;
-  --accent-dim: #1a2847;
-  --green: #22c55e;
-  --green-dim: #0d2818;
-  --amber: #fbbf24;
-  --amber-dim: #2a1e05;
-  --hero-bg: #060810;
-  --hero-fg: #e8ecf4;
-  --hero-fg2: #5a6a84;
-  --hero-border: rgba(255,255,255,0.06);
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
-  color-scheme: dark;
-}
+/* Hero */
+.hero { padding-block: 88px 96px; }
+.hero .wrap { display: grid; grid-template-columns: 1.15fr 1fr; gap: 64px; align-items: center; }
+.hero h1 { font-size: clamp(40px, 6vw, 68px); line-height: 1.02; letter-spacing: -0.025em; }
+.hero h1 em { font-style: italic; color: var(--coral); }
+.hero .lede { font-size: 19px; margin-top: 24px; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin-top: 36px; }
+.hero-actions .link { color: var(--cream-2); font-size: 15px; }
+.facts { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 40px; margin: 56px 0 0; padding-top: 28px; border-top: 1px solid var(--line); }
+.facts dt { font-family: var(--serif); font-size: 32px; line-height: 1; }
+.facts dd { margin: 6px 0 0; color: var(--cream-3); font-size: 13.5px; }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; gap: 48px; } }
+@media (max-width: 560px) { .hero { padding-block: 56px 64px; } .facts { grid-template-columns: repeat(2, auto); gap: 24px 40px; } }
 
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+/* Alert mock — mirrors what lands in Telegram */
+.alert { margin: 0; background: var(--navy-2); border: 1px solid var(--line); border-radius: 6px; font-family: var(--mono); font-size: 13.5px; }
+.alert-head { display: flex; justify-content: space-between; align-items: baseline; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.alert-ticker { font-size: 20px; font-weight: 500; color: var(--cream); }
+.alert-price { font-size: 20px; color: var(--cream); }
+.alert-rows { list-style: none; margin: 0; padding: 8px 20px; }
+.alert-rows li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dashed var(--line); color: var(--cream-2); }
+.alert-rows li:last-child { border-bottom: 0; }
+.alert-rows b { font-weight: 500; color: var(--pass); }
+.alert-foot { padding: 14px 20px; border-top: 1px solid var(--line); color: var(--cream-3); font-size: 12.5px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.alert-tag { display: inline-block; color: var(--navy); background: var(--pass); padding: 2px 8px; border-radius: 3px; font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; }
 
-body {
-  margin: 0;
-  font-family: var(--font-display);
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+/* Conditions */
+.conditions { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--cream); }
+.cond { padding: 24px 24px 8px 0; }
+.cond + .cond { padding-left: 24px; border-left: 1px solid var(--line); }
+.cond-n { font-family: var(--mono); font-size: 13px; color: var(--coral); }
+.cond h3 { font-size: 22px; margin: 12px 0 10px; }
+.cond p { color: var(--cream-2); font-size: 15px; }
+@media (max-width: 900px) { .conditions { grid-template-columns: 1fr 1fr; } .cond:nth-child(3) { padding-left: 0; border-left: 0; } }
+@media (max-width: 560px) { .conditions { grid-template-columns: 1fr; } .cond, .cond + .cond { padding: 20px 0; border-left: 0; border-bottom: 1px solid var(--line); } }
 
-.wrap {
-  max-width: 1060px;
-  margin: 0 auto;
-  padding-left: max(20px, env(safe-area-inset-left, 0px));
-  padding-right: max(20px, env(safe-area-inset-right, 0px));
-}
+.filters { margin-top: 72px; }
+.filters h3 { font-size: 26px; margin-bottom: 8px; }
+.filters > p { color: var(--cream-2); margin-bottom: 24px; }
+.rows { margin: 0; border-top: 1px solid var(--line); }
+.rows > div { display: grid; grid-template-columns: 240px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.rows dt { font-weight: 500; }
+.rows dd { margin: 0; color: var(--cream-2); font-size: 15px; }
+@media (max-width: 640px) { .rows > div { grid-template-columns: 1fr; gap: 4px; } }
 
-/* NAV */
-nav {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 50;
-  background: var(--hero-bg);
-  border-bottom: 1px solid var(--hero-border);
-}
-.nav-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-block: 14px;
-  padding-left: max(20px, env(safe-area-inset-left, 0px));
-  padding-right: max(20px, env(safe-area-inset-right, 0px));
-  max-width: 1060px;
-  margin: 0 auto;
-}
-.nav-logo {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--hero-fg);
-  letter-spacing: -0.01em;
-  text-decoration: none;
-}
-.nav-logo span { color: var(--accent); }
-.nav-links { display: flex; gap: 24px; align-items: center; }
-.nav-links a {
-  color: var(--hero-fg2);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 500;
-  transition: color 0.15s;
-}
-.nav-links a:hover { color: var(--hero-fg); }
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--accent);
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 7px;
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: -0.01em;
-  transition: opacity 0.15s;
-  border: none;
-  cursor: pointer;
-}
-.btn-primary:hover { opacity: 0.88; }
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  color: var(--hero-fg);
-  border: 1px solid var(--hero-border);
-  padding: 8px 18px;
-  border-radius: 7px;
-  font-size: 13.5px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
-  cursor: pointer;
-}
-.btn-ghost:hover { border-color: rgba(255,255,255,0.2); }
+/* Strategies */
+.strategies { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.strategies li { background: var(--navy); padding: 20px; }
+.strategies .n { font-family: var(--mono); font-size: 12.5px; color: var(--cream-3); }
+.strategies strong { display: block; font-weight: 500; margin: 6px 0 4px; }
+.strategies span { color: var(--cream-2); font-size: 14.5px; }
+.note { margin-top: 32px; padding-left: 18px; border-left: 2px solid var(--coral); color: var(--cream-2); max-width: 70ch; }
+.note strong { color: var(--cream); }
 
-/* HERO */
-.hero {
-  background: var(--hero-bg);
-  padding-block: 80px 72px;
-}
-.hero-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  max-width: 1060px;
-  margin: 0 auto;
-  padding-left: max(20px, env(safe-area-inset-left, 0px));
-  padding-right: max(20px, env(safe-area-inset-right, 0px));
-}
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 18px;
-}
-.hero-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-h1 {
-  font-size: clamp(30px, 4.5vw, 48px);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  color: var(--hero-fg);
-  margin: 0 0 20px;
-  text-wrap: balance;
-}
-h1 em { font-style: normal; color: var(--accent); }
-.hero-sub {
-  font-size: 16px;
-  color: var(--hero-fg2);
-  line-height: 1.65;
-  margin: 0 0 32px;
-  max-width: 480px;
-}
-.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero-stats {
-  display: flex;
-  gap: 28px;
-  margin-top: 40px;
-  padding-top: 28px;
-  border-top: 1px solid var(--hero-border);
-}
-.hero-stat-n {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--hero-fg);
-  letter-spacing: -0.03em;
-}
-.hero-stat-l {
-  font-size: 12px;
-  color: var(--hero-fg2);
-  margin-top: 2px;
-}
+/* Features */
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 40px; }
+.feature h3 { font-size: 21px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.feature p { color: var(--cream-2); font-size: 15px; }
+.pro { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--coral); border: 1px solid var(--coral); border-radius: 3px; padding: 1px 6px; }
+@media (max-width: 900px) { .features { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .features { grid-template-columns: 1fr; gap: 32px; } }
 
-/* SIGNAL CARD in hero */
-.signal-card {
-  background: #131929;
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 12px;
-  padding: 20px;
-  font-family: var(--font-mono);
-}
-.sc-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.sc-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(13,156,82,0.15);
-  color: #22c55e;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  padding: 4px 10px;
-  border-radius: 20px;
-  text-transform: uppercase;
-}
-.sc-ticker {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--hero-fg);
-  letter-spacing: -0.02em;
-}
-.sc-price {
-  font-size: 28px;
-  font-weight: 500;
-  color: var(--hero-fg);
-  margin-bottom: 14px;
-  letter-spacing: -0.03em;
-}
-.sc-rows { display: flex; flex-direction: column; gap: 8px; }
-.sc-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12.5px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.04);
-}
-.sc-label { color: #5a6a84; }
-.sc-val { color: #e8ecf4; }
-.sc-val.pass { color: #22c55e; }
-.sc-footer {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-  font-size: 11.5px;
-  color: #5a6a84;
-}
-.sc-strategy {
-  margin-top: 10px;
-  font-size: 11.5px;
-  background: rgba(79,131,240,0.12);
-  color: #7aabff;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
+.commands { margin-top: 72px; }
+.commands h3 { font-size: 26px; margin-bottom: 20px; }
+.cmd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 40px; margin: 0; }
+.cmd-grid > div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.cmd-grid dt { font-family: var(--mono); color: var(--cream); }
+.cmd-grid dd { margin: 0; color: var(--cream-3); text-align: right; }
 
-/* SECTIONS */
-section { padding-block: 72px; }
-section:nth-child(even) { background: var(--bg2); }
+/* Why */
+.why { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 64px; }
+.why h3 { font-size: 22px; margin-bottom: 8px; }
+.why p { color: var(--cream-2); }
+@media (max-width: 720px) { .why { grid-template-columns: 1fr; } }
 
-h2 {
-  font-size: clamp(22px, 3vw, 30px);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  margin: 0 0 10px;
-  text-wrap: balance;
-  color: var(--fg);
-}
-.section-sub {
-  font-size: 16px;
-  color: var(--fg2);
-  max-width: 540px;
-  margin: 0 0 44px;
-  line-height: 1.65;
-}
-.section-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
+/* Walkthrough */
+.walk { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.walk-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 20px 24px; background: var(--navy-2); border-bottom: 1px solid var(--line); font-family: var(--mono); }
+.walk-head .t { font-size: 22px; }
+.walk ol { list-style: none; margin: 0; padding: 0; }
+.walk li { display: grid; grid-template-columns: 40px 1fr auto; gap: 16px; padding: 22px 24px; border-bottom: 1px solid var(--line); }
+.walk .i { font-family: var(--mono); color: var(--cream-3); }
+.walk h3 { font-family: var(--sans); font-size: 16px; font-weight: 600; letter-spacing: 0; margin-bottom: 6px; }
+.walk p { color: var(--cream-2); font-size: 15px; }
+.walk .v { font-family: var(--mono); color: var(--cream); }
+.walk .ok { font-family: var(--mono); font-size: 13px; color: var(--pass); white-space: nowrap; }
+.walk-result { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 18px 24px; font-family: var(--mono); font-size: 13.5px; color: var(--cream-2); }
+.walk-result strong { color: var(--pass); font-weight: 500; }
+@media (max-width: 560px) { .walk li { grid-template-columns: 1fr; gap: 6px; padding: 20px 16px; } }
 
-/* HOW IT WORKS */
-.conditions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 40px;
-}
-.cond-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  box-shadow: var(--card-shadow);
-}
-.cond-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--accent-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.cond-title { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
-.cond-desc { font-size: 12.5px; color: var(--fg2); line-height: 1.5; }
+/* Articles */
+.article { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.article:first-child { border-top: 1px solid var(--line); }
+.article .m { font-family: var(--mono); font-size: 12.5px; color: var(--cream-3); text-transform: uppercase; letter-spacing: .06em; }
+.article h3 { font-size: 22px; margin: 6px 0; }
+.article p { color: var(--cream-2); }
+.article .r { font-family: var(--mono); font-size: 22px; }
+.article .r.up { color: var(--pass); }
+.article .r.down { color: var(--warn); }
+.muted { color: var(--cream-3); }
 
-.filters-list {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: var(--card-shadow);
-}
-.filter-row {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: 13px 18px;
-  border-bottom: 1px solid var(--border);
-  font-size: 13.5px;
-  flex-wrap: wrap;
-}
-.filter-row:last-child { border-bottom: none; }
-.filter-icon { font-size: 14px; flex-shrink: 0; align-self: flex-start; margin-top: 1px; }
-.filter-name { font-weight: 500; white-space: nowrap; }
-.filter-desc { color: var(--fg2); font-size: 12.5px; flex: 1; min-width: 160px; }
-@media (max-width: 480px) {
-  .filter-row { gap: 8px; padding: 12px 14px; }
-  .filter-name { font-size: 13px; }
-  .filter-desc { font-size: 12px; width: 100%; min-width: 0; flex-basis: 100%; margin-left: 22px; }
-}
-
-/* QUIZ / STRATEGIES */
-.strategies-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
-.strat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: var(--card-shadow);
-}
-.strat-num {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--fg3);
-  margin-bottom: 6px;
-  font-family: var(--font-mono);
-}
-.strat-name { font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
-.strat-desc { font-size: 12px; color: var(--fg2); line-height: 1.5; }
-
-.quiz-flow {
-  background: var(--accent-dim);
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  padding: 20px 24px;
-  margin-top: 32px;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-.quiz-flow-icon { font-size: 22px; flex-shrink: 0; }
-.quiz-flow-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--accent); }
-.quiz-flow-desc { font-size: 13px; color: var(--fg2); line-height: 1.55; }
-
-/* FEATURES */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-.feat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: var(--card-shadow);
-}
-.feat-icon { font-size: 22px; margin-bottom: 12px; }
-.feat-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
-.feat-desc { font-size: 13px; color: var(--fg2); line-height: 1.55; }
-
-/* COMMANDS */
-.commands-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
-}
-.cmd-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-.cmd-code {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  color: var(--accent);
-  font-weight: 500;
-  white-space: nowrap;
-}
-.cmd-desc { font-size: 12.5px; color: var(--fg2); }
+/* About */
+.about { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; }
+.about p { color: var(--cream-2); font-size: 17px; }
+.about p + p { margin-top: 16px; }
+.sig { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 15px; color: var(--cream-2); }
+.sig strong { color: var(--cream); font-weight: 500; display: block; }
+@media (max-width: 760px) { .about { grid-template-columns: 1fr; gap: 24px; } }
 
 /* FAQ */
-.faq-list { display: flex; flex-direction: column; gap: 1px; }
-.faq-item {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 8px;
-  overflow: hidden;
-}
-.faq-q {
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 16px 20px;
-  font-size: 14.5px;
-  font-weight: 500;
-  color: var(--fg);
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-display);
-}
-.faq-q:hover { background: var(--accent-dim); }
-.faq-arrow { font-size: 12px; color: var(--fg3); transition: transform 0.2s; flex-shrink: 0; }
-.faq-item.open .faq-arrow { transform: rotate(180deg); }
-.faq-a {
-  display: none;
-  padding: 0 20px 16px;
-  font-size: 13.5px;
-  color: var(--fg2);
-  line-height: 1.65;
-}
-.faq-item.open .faq-a { display: block; }
+.faq { max-width: 780px; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; padding: 20px 0; font-family: var(--serif); font-size: 21px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-family: var(--mono); color: var(--coral); }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { color: var(--cream-2); padding-bottom: 22px; max-width: 68ch; }
 
-/* CTA */
-.cta-section {
-  background: var(--hero-bg);
-  text-align: center;
-  padding-block: 72px;
-}
-.cta-section h2 { color: var(--hero-fg); }
-.cta-section p { color: var(--hero-fg2); max-width: 480px; margin: 0 auto 32px; font-size: 16px; }
-.setup-steps {
-  display: flex;
-  gap: 0;
-  justify-content: center;
-  margin-bottom: 36px;
-  flex-wrap: wrap;
-  gap: 0;
-}
-.setup-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13.5px;
-  color: var(--hero-fg2);
-}
-.setup-step-n {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--hero-fg);
-  flex-shrink: 0;
-}
-.setup-arrow { color: rgba(255,255,255,0.2); margin: 0 14px; font-size: 14px; }
+/* Closing CTA */
+.closing { text-align: center; }
+.closing h2 { margin-inline: auto; font-size: clamp(34px, 5vw, 56px); }
+.steps { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 40px; margin: 28px 0 40px; padding: 0; color: var(--cream-2); }
+.steps span { font-family: var(--mono); color: var(--coral); margin-right: 8px; }
+.closing .btn { min-height: 52px; padding: 0 32px; font-size: 16px; }
 
-/* FOOTER */
-footer {
-  background: var(--hero-bg);
-  border-top: 1px solid var(--hero-border);
-  padding-block: 28px;
-}
-.footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  max-width: 1060px;
-  margin: 0 auto;
-  padding-left: max(20px, env(safe-area-inset-left, 0px));
-  padding-right: max(20px, env(safe-area-inset-right, 0px));
-}
-.footer-left { font-size: 13px; color: var(--hero-fg2); }
-.footer-links { display: flex; gap: 20px; }
-.footer-links a { color: var(--hero-fg2); text-decoration: none; font-size: 13px; }
-.footer-links a:hover { color: var(--hero-fg); }
-
-/* MODAL */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 200;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-overlay[hidden] { display: none !important; }
-.modal-box {
-  background: var(--bg2);
-  border-radius: 14px;
-  max-width: 580px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 28px;
-}
-.modal-title { font-size: 18px; font-weight: 600; margin: 0 0 16px; }
-.modal-body { font-size: 13.5px; color: var(--fg2); line-height: 1.7; }
-.modal-body h3 { font-size: 14px; color: var(--fg); margin: 16px 0 6px; font-weight: 600; }
-.modal-close {
-  float: right;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--fg3);
-  margin-left: 12px;
-}
-
-/* COOKIE */
-.cookie-bar {
-  position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
-  left: max(16px, env(safe-area-inset-left, 0px));
-  right: max(16px, env(safe-area-inset-right, 0px));
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 18px;
-  z-index: 100;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-  font-size: 13px;
-  color: var(--fg2);
-}
-.cookie-bar[hidden] { display: none !important; }
-.cookie-actions { display: flex; gap: 8px; margin-left: auto; }
-.btn-sm {
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 12.5px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-display);
-}
-.btn-sm-accent { background: var(--accent); color: #fff; }
-.btn-sm-ghost { background: var(--border); color: var(--fg2); }
-
-@media (max-width: 720px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .signal-card { display: none; }
-  .conditions-grid { grid-template-columns: 1fr; }
-  .features-grid { grid-template-columns: 1fr; }
-  .hero-stats { gap: 18px; flex-wrap: wrap; }
-  .nav-links .hide-mobile { display: none; }
-  .setup-steps { flex-direction: column; align-items: center; gap: 10px; }
-  .setup-arrow { transform: rotate(90deg); }
-}
-@media (max-width: 480px) {
-  section { padding-block: 52px; }
-  h2 { font-size: 22px; }
-  .strategies-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* MOBILE STICKY BOTTOM BAR */
-.mobile-bottom-bar {
-  display: none;
-}
-@media (max-width: 720px) {
-  .mobile-bottom-bar {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: var(--hero-bg);
-    border-top: 1px solid var(--hero-border);
-    padding: 10px 16px;
-    padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
-    gap: 10px;
-    align-items: center;
-  }
-  .mobile-bottom-bar .btn-primary {
-    flex: 1;
-    justify-content: center;
-    font-size: 14px;
-    padding: 11px 12px;
-  }
-  .mobile-bottom-bar .btn-upgrade {
-    flex: 1;
-    justify-content: center;
-    font-size: 14px;
-    padding: 11px 12px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: transparent;
-    color: var(--hero-fg);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 7px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.15s;
-    letter-spacing: -0.01em;
-  }
-  .mobile-bottom-bar .btn-upgrade:hover { background: rgba(255,255,255,0.07); }
-  /* push page content above the bar so footer isn't hidden */
+/* Mobile action bar */
+.mbar { display: none; }
+@media (max-width: 760px) {
+  .mbar { display: flex; gap: 10px; position: fixed; z-index: 60; left: 0; right: 0; bottom: 0; padding: 10px 16px max(10px, env(safe-area-inset-bottom, 0px)); background: var(--navy); border-top: 1px solid var(--line); }
+  .mbar .btn { flex: 1; }
   body { padding-bottom: 72px; }
-}
-/* Mobile nav Plans link */
-.nav-plans-mobile {
-  display: none;
-}
-@media (max-width: 720px) {
-  .nav-plans-mobile {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    padding: 5px 10px;
-    border: 1px solid rgba(79,131,240,0.3);
-    border-radius: 6px;
-    white-space: nowrap;
-  }
+  .cookie { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
 }
 </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">Four<span>Condition</span>Bot</a>
-    <div class="nav-links">
-      <a href="#how" class="hide-mobile">How it works</a>
-      <a href="#strategies" class="hide-mobile">Strategies</a>
-      <a href="#faq" class="hide-mobile">FAQ</a>
-      <a href="upgrade/" class="hide-mobile" style="color:var(--hero-fg2);text-decoration:none;font-size:13.5px;font-weight:500">Upgrade ✦</a>
-      <a href="upgrade/" class="nav-plans-mobile">Plans ✦</a>
-      <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Open Telegram →</a>
-    </div>
+<header class="nav">
+  <div class="wrap">
+    <a href="/" class="logo" aria-label="FourConditionBot home">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="11" height="11" fill="#f4ecdc"/><rect x="18" y="3" width="11" height="11" fill="#f4ecdc"/><rect x="3" y="18" width="11" height="11" fill="#f4ecdc"/><rect x="18" y="18" width="11" height="11" fill="#f26b5b"/></svg>
+      FourConditionBot
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#how" class="hide-sm">How it works</a>
+      <a href="#strategies" class="hide-sm">Strategies</a>
+      <a href="#faq" class="hide-sm">FAQ</a>
+      <a href="/upgrade/" class="btn btn-sm btn-coral-outline">Upgrade</a>
+      <a href="https://t.me/FourConditionBot" class="btn btn-sm btn-coral hide-sm" target="_blank" rel="noopener">Start on Telegram</a>
+    </nav>
   </div>
-</nav>
+</header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
+<main id="main">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
     <div>
-      <div class="hero-eyebrow"><span class="hero-dot"></span>Live · Free to start · No noise</div>
-      <h1>Stock screening built on <em>four conditions</em>, not hype.</h1>
-      <p class="hero-sub">FourConditionBot monitors 500+ assets — US stocks, crypto, London and Asia markets — and notifies you on Telegram only when price, momentum, and volatility all align. Filtered for your personal strategy.</p>
+      <p class="eyebrow">Stock &amp; crypto screener · Telegram</p>
+      <h1 id="hero-title">One alert, only when <em>all four</em> conditions agree.</h1>
+      <p class="lede">FourConditionBot watches 500+ US stocks, crypto, London and Asia listings. It stays quiet until price, momentum and volatility line up, then sends you a single Telegram message, tuned to how you invest.</p>
       <div class="hero-actions">
-        <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Start free on Telegram</a>
-        <a href="#how" class="btn-ghost">See how it works</a>
+        <a href="https://t.me/FourConditionBot" class="btn btn-coral" target="_blank" rel="noopener">Start free on Telegram</a>
+        <a href="#how" class="link">How the signal works</a>
       </div>
-      <div class="hero-stats">
-        <div>
-          <div class="hero-stat-n">500+</div>
-          <div class="hero-stat-l">Assets monitored</div>
-        </div>
-        <div>
-          <div class="hero-stat-n">4</div>
-          <div class="hero-stat-l">Conditions required</div>
-        </div>
-        <div>
-          <div class="hero-stat-n">10</div>
-          <div class="hero-stat-l">Investment strategies</div>
-        </div>
-        <div>
-          <div class="hero-stat-n">24/7</div>
-          <div class="hero-stat-l">Crypto scanning</div>
-        </div>
-      </div>
+      <dl class="facts">
+        <div><dt>500+</dt><dd>assets watched</dd></div>
+        <div><dt>4</dt><dd>conditions required</dd></div>
+        <div><dt>30 min</dt><dd>scan interval</dd></div>
+        <div><dt>$0</dt><dd>to start</dd></div>
+      </dl>
+    </div>
+
+    <figure class="alert" aria-label="Example alert as it appears in Telegram">
+      <div class="alert-head"><span class="alert-ticker">NVDA</span><span class="alert-price">$487.32</span></div>
+      <ul class="alert-rows">
+        <li>Price vs 20-day MA <b>below</b></li>
+        <li>RSI (14) <b>44.2</b></li>
+        <li>Lower Bollinger Band <b>within 1.4%</b></li>
+        <li>Trend gate (200 SMA) <b>clear</b></li>
+        <li>EPS trend <b>positive</b></li>
+      </ul>
+      <figcaption class="alert-foot"><span class="alert-tag">4 / 4 met</span><span>Strategy 04 · Growth at Discount</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section" id="how" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Signal logic</p>
+      <h2 id="how-title">Four conditions. All of them, at the same time.</h2>
+      <p class="lede">No single indicator is ever enough. A message only goes out when every check below passes together.</p>
+    </div>
+
+    <div class="conditions">
+      <div class="cond"><span class="cond-n">01</span><h3>Below the 20-day average</h3><p>Price has pulled back from its short-term trend.</p></div>
+      <div class="cond"><span class="cond-n">02</span><h3>RSI under 50</h3><p>Momentum has cooled, without the capitulation of a crash.</p></div>
+      <div class="cond"><span class="cond-n">03</span><h3>Near the lower band</h3><p>Within 2% of the lower Bollinger Band, so the move is statistically stretched.</p></div>
+      <div class="cond"><span class="cond-n">04</span><h3>Every filter clears</h3><p>Earnings, trend, 52-week low, velocity, EPS and penny-stock checks all pass.</p></div>
+    </div>
+
+    <div class="filters">
+      <h3>The filters behind condition four</h3>
+      <p>Setups that tend to fail are dropped before they reach you.</p>
+      <dl class="rows">
+        <div><dt>Earnings blackout</dt><dd>No alerts from 5 days before to 3 days after an earnings report.</dd></div>
+        <div><dt>52-week low guard</dt><dd>Blocks anything within 8% of a 52-week low or a recent 10-session low.</dd></div>
+        <div><dt>Trend gate</dt><dd>Skips stocks more than 8% below their 200-day SMA, which means they're in a real downtrend.</dd></div>
+        <div><dt>EPS trend</dt><dd>Requires positive forward earnings growth, with a whitelist for high-growth names. Crypto is exempt.</dd></div>
+        <div><dt>Velocity guard</dt><dd>Blocks falling knives: more than 12% under the 20-day MA, or a 5-session drop over 15%.</dd></div>
+        <div><dt>Penny stock filter</dt><dd>Ignores anything trading under $1.00.</dd></div>
+        <div><dt>5-day cooldown</dt><dd>One alert per ticker per setup, unless the 20-day MA moves more than 10%.</dd></div>
+        <div><dt>Daily cap</dt><dd>At most 3 alerts per ticker per day, so fast movers don't flood your chat.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="strategies" aria-labelledby="strat-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Personalisation</p>
+      <h2 id="strat-title">Your strategy sets the thresholds.</h2>
+      <p class="lede">A 10-question quiz on your first message places you in one of ten strategies. Each one adjusts the thresholds to your risk tolerance, holding period and goals.</p>
+    </div>
+    <ol class="strategies">
+      <li><span class="n">01</span><strong>Conservative Income</strong><span>Dividend focus, strict filters</span></li>
+      <li><span class="n">02</span><strong>Balanced Growth</strong><span>Growth mixed with stability</span></li>
+      <li><span class="n">03</span><strong>Aggressive Growth</strong><span>Wider thresholds, more risk</span></li>
+      <li><span class="n">04</span><strong>Growth at Discount</strong><span>Quality names on real pullbacks</span></li>
+      <li><span class="n">05</span><strong>Momentum Swing</strong><span>Short dips in trending stocks</span></li>
+      <li><span class="n">06</span><strong>Sector Rotation</strong><span>Follows money between sectors</span></li>
+      <li><span class="n">07</span><strong>Blue Chip Only</strong><span>Large caps, mean reversion</span></li>
+      <li><span class="n">08</span><strong>Small Cap Hunter</strong><span>Smaller names, bigger swings</span></li>
+      <li><span class="n">09</span><strong>Value Deep Dive</strong><span>Strong fundamentals, beaten down</span></li>
+      <li><span class="n">10</span><strong>Custom</strong><span>Pick every indicator yourself</span></li>
+    </ol>
+    <p class="note"><strong>Changed your mind?</strong> Send <code>/retakequiz</code> any time, or choose Strategy 10 and set every threshold by hand.</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="feat-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">What you get</p>
+      <h2 id="feat-title">Everything runs inside Telegram.</h2>
+      <p class="lede">No app to install and no account to create.</p>
+    </div>
+    <div class="features">
+      <div class="feature"><h3>Personal watchlist</h3><p>Up to 150 tickers on Free. Add with <code>/add</code>, remove with <code>/remove</code>, check live prices with <code>/status</code>.</p></div>
+      <div class="feature"><h3>Sector packs</h3><p>Ready-made lists for Tech, Finance, Health, Energy and a Universal set, loaded with one command.</p></div>
+      <div class="feature"><h3>Your own settings</h3><p>Tune the RSI threshold, band proximity, trend gate, earnings blackout and ATR multiplier.</p></div>
+      <div class="feature"><h3>Ignore list</h3><p>Mute tickers you never want to hear about with <code>/ignore</code>.</p></div>
+      <div class="feature"><h3>Top setups</h3><p><code>/topsignal</code> shows which names on your list are closest to passing.</p></div>
+      <div class="feature"><h3>Monthly reports</h3><p>A write-up on the 1st of each month showing how past alerts actually performed.</p></div>
+      <div class="feature"><h3>Signal history <span class="pro">Pro</span></h3><p>Every alert your watchlist has fired, filterable by ticker with <code>/history</code>.</p></div>
+      <div class="feature"><h3>Global markets <span class="pro">Pro</span></h3><p>Crypto, London and Asia listings. Crypto scans run 24/7, weekends included.</p></div>
+      <div class="feature"><h3>Weekly digest <span class="pro">Pro</span></h3><p>A Sunday summary of the week's signals across your list.</p></div>
+    </div>
+
+    <div class="commands">
+      <h3>Commands</h3>
+      <dl class="cmd-grid">
+        <div><dt>/add TSLA AAPL</dt><dd>Add tickers</dd></div>
+        <div><dt>/remove TSLA</dt><dd>Remove a ticker</dd></div>
+        <div><dt>/remove all</dt><dd>Clear watchlist</dd></div>
+        <div><dt>/list</dt><dd>Show watchlist</dd></div>
+        <div><dt>/status</dt><dd>Live prices</dd></div>
+        <div><dt>/profile</dt><dd>Your strategy</dd></div>
+        <div><dt>/retakequiz</dt><dd>Redo the quiz</dd></div>
+        <div><dt>/settings</dt><dd>Your thresholds</dd></div>
+        <div><dt>/set rsi 45</dt><dd>Change one setting</dd></div>
+        <div><dt>/resetsettings</dt><dd>Back to defaults</dd></div>
+        <div><dt>/packload tech</dt><dd>Load a sector pack</dd></div>
+        <div><dt>/topsignal</dt><dd>Best current setups</dd></div>
+        <div><dt>/ignore COIN</dt><dd>Mute a ticker</dd></div>
+        <div><dt>/history</dt><dd>Signal history (Pro)</dd></div>
+        <div><dt>/digest stop</dt><dd>Pause digest</dd></div>
+        <div><dt>/digest start</dt><dd>Resume digest</dd></div>
+        <div><dt>/plan</dt><dd>Your current plan</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="why-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Why it works</p>
+      <h2 id="why-title">Fewer alerts, better ones.</h2>
+    </div>
+    <div class="why">
+      <div><h3>High conviction only</h3><p>Four independent checks have to agree. One indicator on its own is noise.</p></div>
+      <div><h3>Separate signal families</h3><p>Trend, momentum and volatility are measured separately and don't move in lockstep. When they line up, it means something.</p></div>
+      <div><h3>Scans every 30 minutes</h3><p>US stocks during market hours. Crypto around the clock, so a Bitcoin setup isn't missed because the NYSE is closed.</p></div>
+      <div><h3>You make the call</h3><p>An alert is a starting point, not an instruction. You decide if it fits your thesis, your size and your timing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="walk-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Under the hood</p>
+      <h2 id="walk-title">One stock, checked step by step.</h2>
+      <p class="lede">An illustrative run of how the bot evaluates a ticker before it sends anything.</p>
+    </div>
+    <div class="walk">
+      <div class="walk-head"><span class="t">AAPL</span><span class="t">$171.48</span></div>
+      <ol>
+        <li><span class="i">01</span><div><h3>Price below 20-day MA</h3><p>20MA = <span class="v">$174.32</span>. Price <span class="v">$171.48</span> sits below it, so the stock has pulled back.</p></div><span class="ok">pass</span></li>
+        <li><span class="i">02</span><div><h3>RSI (14) below 50</h3><p>RSI = <span class="v">43.7</span>. Sellers have had the edge lately, but this isn't a crash.</p></div><span class="ok">pass</span></li>
+        <li><span class="i">03</span><div><h3>Near the lower Bollinger Band</h3><p>Lower band = <span class="v">$169.20</span>. Price is within 1.3% of it, statistically stretched to the downside.</p></div><span class="ok">pass</span></li>
+        <li><span class="i">04</span><div><h3>Filters clear</h3><p>Earnings 34 days out. 4.2% above the 52-week low, 2.1% under the 200 SMA, 3.8% under the 20MA, 5-day move −1.2%. EPS growing, price above $1.</p></div><span class="ok">pass</span></li>
+      </ol>
+      <div class="walk-result"><strong>4 / 4 met · alert sent</strong><span>0 filters triggered · Strategy 04 thresholds</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="perf-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Track record</p>
+      <h2 id="perf-title">How past alerts performed.</h2>
+      <p class="lede">Reports are generated on the 1st of each month from real alert history and added here as it builds.</p>
+    </div>
+    <div id="articles" aria-live="polite"><p class="muted">Loading reports…</p></div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="about-title">
+  <div class="wrap about">
+    <div>
+      <p class="eyebrow">About</p>
+      <h2 id="about-title">Built and run by one person.</h2>
     </div>
     <div>
-      <div class="signal-card">
-        <div class="sc-header">
-          <span class="sc-badge">● Conditions met</span>
-          <span class="sc-ticker">NVDA</span>
-        </div>
-        <div class="sc-price">$487.32</div>
-        <div class="sc-rows">
-          <div class="sc-row">
-            <span class="sc-label">Price vs 20MA</span>
-            <span class="sc-val pass">Below ✓</span>
-          </div>
-          <div class="sc-row">
-            <span class="sc-label">RSI (14)</span>
-            <span class="sc-val pass">44.2 — oversold ✓</span>
-          </div>
-          <div class="sc-row">
-            <span class="sc-label">Bollinger proximity</span>
-            <span class="sc-val pass">Near lower band ✓</span>
-          </div>
-          <div class="sc-row">
-            <span class="sc-label">Trend gate (200SMA)</span>
-            <span class="sc-val pass">Within range ✓</span>
-          </div>
-          <div class="sc-row">
-            <span class="sc-label">EPS trend</span>
-            <span class="sc-val pass">Positive growth ✓</span>
-          </div>
-        </div>
-        <div class="sc-strategy">Strategy 4 · Growth at Discount · Custom thresholds active</div>
-        <div class="sc-footer">📊 View on Yahoo Finance · Not financial advice</div>
-      </div>
+      <p>FourConditionBot started as a personal tool to take emotion out of research. Instead of scrolling charts for hours, the bot does the scanning and only speaks up when something meets the criteria.</p>
+      <p>There's no team and no investors. The code is real, the screener runs live, and every filter exists because a tool that ignores earnings risk or collapsing stocks isn't worth using.</p>
+      <p class="sig"><strong>Vladimir</strong>Builder · <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a></p>
     </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section id="how">
+<section class="section" id="faq" aria-labelledby="faq-title">
   <div class="wrap">
-    <div class="section-label">Signal logic</div>
-    <h2>Four conditions. All must pass.</h2>
-    <p class="section-sub">Every signal requires price, momentum, and volatility to align simultaneously. No single indicator is ever enough.</p>
-
-    <div class="conditions-grid">
-      <div class="cond-card">
-        <div class="cond-icon">📉</div>
-        <div>
-          <div class="cond-title">Price below 20-day MA</div>
-          <div class="cond-desc">The stock is trading below its short-term average — a potential pullback from a trend.</div>
-        </div>
-      </div>
-      <div class="cond-card">
-        <div class="cond-icon">⚡</div>
-        <div>
-          <div class="cond-title">RSI below 50</div>
-          <div class="cond-desc">Momentum is weakened but not yet in freefall. RSI below 50 signals cooling without capitulation.</div>
-        </div>
-      </div>
-      <div class="cond-card">
-        <div class="cond-icon">📊</div>
-        <div>
-          <div class="cond-title">Near lower Bollinger Band</div>
-          <div class="cond-desc">Price is within 2% of the lower band — statistically stretched to the downside.</div>
-        </div>
-      </div>
-      <div class="cond-card">
-        <div class="cond-icon">🛡️</div>
-        <div>
-          <div class="cond-title">Passes all active filters</div>
-          <div class="cond-desc">Earnings blackout, trend gate, 52-week low guard, velocity guard, EPS trend, and penny stock filter must all clear.</div>
-        </div>
-      </div>
+    <div class="section-head">
+      <p class="eyebrow">Questions</p>
+      <h2 id="faq-title">Before you start.</h2>
     </div>
-
-    <div class="section-label" style="margin-top:40px">Smart filters</div>
-    <p style="color:var(--fg2);font-size:14px;margin:0 0 16px">Signals that would likely fail are suppressed before they reach you.</p>
-    <div class="filters-list">
-      <div class="filter-row">
-        <span class="filter-icon">📅</span>
-        <span class="filter-name">Earnings blackout</span>
-        <span class="filter-desc">Suppresses alerts 5 days before and 3 days after earnings reports</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">📉</span>
-        <span class="filter-name">52-week low guard</span>
-        <span class="filter-desc">Blocks signals within 8% of a 52-week low or recent 10-session lows</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">📏</span>
-        <span class="filter-name">Trend gate</span>
-        <span class="filter-desc">Skips stocks more than 8% below their 200-day SMA — in a true downtrend</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">💹</span>
-        <span class="filter-name">EPS trend filter</span>
-        <span class="filter-desc">Requires positive forward earnings growth (with whitelist exceptions for high-growth names). Crypto assets are exempt — earnings data doesn't apply.</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">🚫</span>
-        <span class="filter-name">Penny stock filter</span>
-        <span class="filter-desc">Removes any stock trading below $1.00 per share</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">⏱️</span>
-        <span class="filter-name">5-day signal cooldown</span>
-        <span class="filter-desc">Suppresses repeat alerts on the same ticker for 5 days — unless the 20MA shifts by more than 10%, signalling a meaningfully different setup</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">🔁</span>
-        <span class="filter-name">Daily signal cap</span>
-        <span class="filter-desc">If the same ticker fires more than 3 times in a single day, further alerts are automatically suppressed until the next day — prevents alert fatigue from fast-moving assets</span>
-      </div>
-      <div class="filter-row">
-        <span class="filter-icon">🚨</span>
-        <span class="filter-name">Velocity guard</span>
-        <span class="filter-desc">Blocks falling-knife setups: suppresses if price is more than 12% below the 20MA, or if the 5-session decline exceeds 15% — signals where the headroom looks attractive but the stock is in freefall</span>
-      </div>
+    <div class="faq">
+      <details><summary>Is this financial advice?</summary><p>No. FourConditionBot is a technical screening tool. An alert means certain conditions lined up on a chart. It is not a recommendation to buy or sell. Always do your own research.</p></details>
+      <details><summary>How do alerts work?</summary><p>Every 30 minutes the bot scans your watchlist: US stocks during market hours, crypto 24/7. If an asset passes all four conditions and clears every filter, you get a Telegram message. A 5-day cooldown and a cap of 3 alerts per ticker per day stop repeats. Your strategy decides the exact thresholds.</p></details>
+      <details><summary>What is the quiz for?</summary><p>On your first message, 10 questions place you in one of ten strategies, from Conservative Income to fully Custom. The strategy sets your RSI level, band proximity and trend gate so alerts match how you actually invest. Retake it any time.</p></details>
+      <details><summary>Is it free?</summary><p>Yes. Free includes live alerts, a 150-ticker watchlist and all 10 strategies. Pro ($5/mo) adds crypto, London and Asia markets, signal history and the weekly digest. Elite ($10/mo) raises the watchlist to 999. <a href="/upgrade/">Compare plans</a>.</p></details>
+      <details><summary>Which markets are covered?</summary><p>Any US-listed stock, crypto (BTC-USD, ETH-USD, SOL-USD and more), London (.L) and Asia (.HK, .T) listings. Sector packs are free; crypto, London and Asia packs need Pro. Data comes from Yahoo Finance and Polygon.io.</p></details>
+      <details><summary>What data do you store?</summary><p>Your Telegram chat ID, watchlist, strategy settings and signal history. No name, email or card details. Data lives on Railway servers in the US. Email fourconditionbot@gmail.com to have it deleted within 7 days.</p></details>
+      <details><summary>Why haven't I had an alert in a while?</summary><p>All four conditions rarely line up at once, especially in strong trends. A quiet bot is working as intended.</p></details>
     </div>
   </div>
 </section>
 
-<!-- STRATEGIES / QUIZ -->
-<section id="strategies">
+<section class="section closing" aria-labelledby="cta-title">
   <div class="wrap">
-    <div class="section-label">Personalization</div>
-    <h2>Your strategy. Your screener.</h2>
-    <p class="section-sub">A 10-question onboarding quiz assigns you one of ten screening strategies. Each strategy adjusts the condition thresholds to match your risk tolerance, holding period, and goals.</p>
-
-    <div class="strategies-grid">
-      <div class="strat-card">
-        <div class="strat-num">01</div>
-        <div class="strat-name">Conservative Income</div>
-        <div class="strat-desc">Low-risk dividend focus, strict filters</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">02</div>
-        <div class="strat-name">Balanced Growth</div>
-        <div class="strat-desc">Mix of growth and stability</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">03</div>
-        <div class="strat-name">Aggressive Growth</div>
-        <div class="strat-desc">Higher risk tolerance, wider thresholds</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">04</div>
-        <div class="strat-name">Growth at Discount</div>
-        <div class="strat-desc">Quality names on meaningful pullbacks</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">05</div>
-        <div class="strat-name">Momentum Swing</div>
-        <div class="strat-desc">Short-term dips in trending stocks</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">06</div>
-        <div class="strat-name">Sector Rotation</div>
-        <div class="strat-desc">Follows capital flows between sectors</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">07</div>
-        <div class="strat-name">Blue Chip Only</div>
-        <div class="strat-desc">Large-cap stability with mean reversion</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">08</div>
-        <div class="strat-name">Small Cap Hunter</div>
-        <div class="strat-desc">Smaller names with outsized potential</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">09</div>
-        <div class="strat-name">Value Deep Dive</div>
-        <div class="strat-desc">Fundamentally strong, temporarily beaten down</div>
-      </div>
-      <div class="strat-card">
-        <div class="strat-num">10</div>
-        <div class="strat-name">Custom / Advanced</div>
-        <div class="strat-desc">Pick your own indicators and thresholds manually</div>
-      </div>
-    </div>
-
-    <div class="quiz-flow">
-      <div class="quiz-flow-icon">🧠</div>
-      <div>
-        <div class="quiz-flow-title">Strategy assigned by quiz</div>
-        <div class="quiz-flow-desc">When you start the bot, a 10-question quiz asks about your experience, risk tolerance, and goals. Your answers determine which strategy — and which signal thresholds — apply to you. You can retake it anytime with <code>/retakequiz</code>, or go fully custom with Strategy 10 where you choose every indicator yourself.</div>
-      </div>
-    </div>
+    <h2 id="cta-title">Set it up in under a minute.</h2>
+    <ol class="steps">
+      <li><span>1</span>Open the bot on Telegram</li>
+      <li><span>2</span>Take the 10-question quiz</li>
+      <li><span>3</span>Add tickers and wait</li>
+    </ol>
+    <a href="https://t.me/FourConditionBot" class="btn btn-coral" target="_blank" rel="noopener">Start free on Telegram</a>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section>
+</main>
+
+<footer class="footer">
   <div class="wrap">
-    <div class="section-label">What's included</div>
-    <h2>Everything in one bot.</h2>
-    <p class="section-sub">No apps to install. No accounts to create. Everything runs inside Telegram.</p>
-
-    <div class="features-grid">
-      <div class="feat-card">
-        <div class="feat-icon">📋</div>
-        <div class="feat-title">Personal watchlist</div>
-        <div class="feat-desc">Add up to 150 tickers with <code>/add</code>, remove with <code>/remove</code>, or wipe everything with <code>/remove all</code>. View live prices with <code>/status</code>.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">📦</div>
-        <div class="feat-title">Stock &amp; crypto packs</div>
-        <div class="feat-desc">Pre-built watchlists for Tech, Finance, Health, Energy, and Universal sectors. Pro unlocks Crypto, London, and Asia packs.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">⚙️</div>
-        <div class="feat-title">Per-user settings</div>
-        <div class="feat-desc">Adjust RSI threshold, Bollinger proximity, trend gate, earnings blackout days, and ATR multiplier to match your style.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🔇</div>
-        <div class="feat-title">Ignore list</div>
-        <div class="feat-desc">Mute specific tickers you don't want to hear about with <code>/ignore AAPL</code>. Clear all ignored tickers with <code>/unignore</code>.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🏆</div>
-        <div class="feat-title">Top signals</div>
-        <div class="feat-desc">See which stocks on your watchlist currently have the most conditions passing with <code>/topsignal</code>.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">📰</div>
-        <div class="feat-title">Monthly performance articles</div>
-        <div class="feat-desc">Auto-generated reports every month analyzing how past signals performed. Published at fourconditionbot.app.</div>
-      </div>
-      <div class="feat-card" style="border-color:var(--accent);background:var(--accent-dim)">
-        <div class="feat-icon">📈</div>
-        <div class="feat-title">Signal history <span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 7px;border-radius:10px;border:1px solid var(--accent);margin-left:4px">Pro</span></div>
-        <div class="feat-desc">Review every signal that fired on your watchlist with <code>/history</code>. Filter by ticker to see its full track record.</div>
-      </div>
-      <div class="feat-card" style="border-color:var(--accent);background:var(--accent-dim)">
-        <div class="feat-icon">🌍</div>
-        <div class="feat-title">Global markets <span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 7px;border-radius:10px;border:1px solid var(--accent);margin-left:4px">Pro</span></div>
-        <div class="feat-desc">Track crypto (BTC, ETH, SOL and more), London-listed stocks, and Asia markets. Crypto scans run 24/7 — no waiting for market hours.</div>
-      </div>
-      <div class="feat-card" style="border-color:var(--accent);background:var(--accent-dim)">
-        <div class="feat-icon">📊</div>
-        <div class="feat-title">Weekly digest <span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 7px;border-radius:10px;border:1px solid var(--accent);margin-left:4px">Pro</span></div>
-        <div class="feat-desc">Every Sunday, receive a summary of the week's signals across your watchlist. Manage it anytime with <code>/digest stop</code> or <code>/digest start</code>.</div>
-      </div>
-    </div>
-
-    <div style="margin-top:36px">
-      <div class="section-label">Commands</div>
-      <div class="commands-grid" style="margin-top:12px">
-        <div class="cmd-row"><div><div class="cmd-code">/add TSLA AAPL</div><div class="cmd-desc">Add tickers to watchlist</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/remove TSLA</div><div class="cmd-desc">Remove from watchlist</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/remove all</div><div class="cmd-desc">Clear entire watchlist at once</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/list</div><div class="cmd-desc">View your watchlist</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/status</div><div class="cmd-desc">Live prices for all tickers</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/profile</div><div class="cmd-desc">View your assigned strategy</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/retakequiz</div><div class="cmd-desc">Redo the strategy quiz</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/settings</div><div class="cmd-desc">View your custom thresholds</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/set rsi 45</div><div class="cmd-desc">Adjust a specific setting</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/packload tech</div><div class="cmd-desc">Load a sector stock pack</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/topsignal</div><div class="cmd-desc">Best current setups</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/ignore COIN</div><div class="cmd-desc">Mute a ticker</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/resetsettings</div><div class="cmd-desc">Reset to strategy defaults</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/history</div><div class="cmd-desc">Signal history (Pro &amp; Elite)</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/digest stop</div><div class="cmd-desc">Pause weekly digest</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/digest start</div><div class="cmd-desc">Resume weekly digest</div></div></div>
-        <div class="cmd-row"><div><div class="cmd-code">/plan</div><div class="cmd-desc">View your current plan</div></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- WHY FOURCONDITIONBOT -->
-<section>
-  <div class="wrap">
-    <div class="section-label">Why it works</div>
-    <h2>Fewer matches. Better matches.</h2>
-    <p class="section-sub">Most screener tools spam you with noise. FourConditionBot does the opposite.</p>
-    <div class="features-grid">
-      <div class="feat-card">
-        <div class="feat-icon">🎯</div>
-        <div class="feat-title">High-conviction only</div>
-        <div class="feat-desc">Requiring four conditions simultaneously means you only hear about setups where multiple independent factors agree. One indicator alone is noise.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🔬</div>
-        <div class="feat-title">Independent signal families</div>
-        <div class="feat-desc">Price trend, momentum, and volatility are measured separately. They don't all move together — so when all three align, it actually means something.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🕐</div>
-        <div class="feat-title">Scans every 30 minutes</div>
-        <div class="feat-desc">US stocks scan continuously during market hours. Crypto runs 24/7 — including nights, weekends, and holidays — so you never miss a Bitcoin setup because the NYSE was closed.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🧠</div>
-        <div class="feat-title">You make the final call</div>
-        <div class="feat-desc">Signals are a starting point, not an instruction. The bot finds the setup; you decide whether it fits your thesis, your position size, and your timing.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- LIVE EXAMPLE -->
-<section>
-  <div class="wrap">
-    <div class="section-label">Under the hood</div>
-    <h2>What actually happens when a signal fires</h2>
-    <p class="section-sub">Here's a real walkthrough of how the bot evaluates a stock, condition by condition.</p>
-
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--card-shadow)">
-      <!-- Header -->
-      <div style="background:var(--hero-bg);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-        <div>
-          <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#5a6a84;margin-bottom:4px">Signal evaluation · Example</div>
-          <div style="font-size:22px;font-weight:600;color:#e8ecf4;letter-spacing:-0.02em;font-family:var(--font-mono)">AAPL &nbsp;<span style="color:#22c55e;font-size:14px">● PASS</span></div>
-        </div>
-        <div style="font-family:var(--font-mono);font-size:24px;font-weight:500;color:#e8ecf4">$171.48</div>
-      </div>
-
-      <!-- Steps -->
-      <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
-
-        <div style="display:flex;gap:16px;align-items:flex-start">
-          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">1</div>
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-              <div style="font-weight:600;font-size:14px">Price below 20-day Moving Average</div>
-              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
-            </div>
-            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">The bot fetches 20 days of closing prices and calculates the average. <span style="font-family:var(--font-mono);color:var(--fg)">20MA = $174.32</span>. Current price <span style="font-family:var(--font-mono);color:var(--fg)">$171.48</span> is below it — the stock has pulled back from its short-term trend. ✓</div>
-          </div>
-        </div>
-
-        <div style="height:1px;background:var(--border)"></div>
-
-        <div style="display:flex;gap:16px;align-items:flex-start">
-          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">2</div>
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-              <div style="font-weight:600;font-size:14px">RSI (14) below 50</div>
-              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
-            </div>
-            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">RSI measures momentum over the last 14 candles. <span style="font-family:var(--font-mono);color:var(--fg)">RSI = 43.7</span> — sellers have had more control than buyers recently, but it's not a full crash. Below 50 means momentum is weakened without being extreme. ✓</div>
-          </div>
-        </div>
-
-        <div style="height:1px;background:var(--border)"></div>
-
-        <div style="display:flex;gap:16px;align-items:flex-start">
-          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">3</div>
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-              <div style="font-weight:600;font-size:14px">Near lower Bollinger Band</div>
-              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
-            </div>
-            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">Bollinger Bands are calculated using the 20MA ± 2 standard deviations. <span style="font-family:var(--font-mono);color:var(--fg)">Lower band = $169.20</span>. Price at $171.48 is within 1.3% of it — statistically stretched to the downside, meaning the move may be overdone. ✓</div>
-          </div>
-        </div>
-
-        <div style="height:1px;background:var(--border)"></div>
-
-        <div style="display:flex;gap:16px;align-items:flex-start">
-          <div style="width:28px;height:28px;border-radius:50%;background:#0d2818;border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#22c55e;flex-shrink:0">4</div>
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-              <div style="font-weight:600;font-size:14px">All smart filters pass</div>
-              <div style="background:#0d2818;color:#22c55e;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px">✓ Pass</div>
-            </div>
-            <div style="color:var(--fg2);font-size:13px;margin-top:5px;line-height:1.6">Earnings are 34 days away (outside the 5-day blackout). Price is 4.2% above its 52-week low (clears the 8% guard). The stock is 2.1% below its 200SMA — within the 8% trend gate. Price is 3.8% below the 20MA — well under the 12% velocity limit. 5-day decline is 1.2% — far below the 15% velocity cap. EPS growth is positive. Price above $1. All filters clear. ✓</div>
-          </div>
-        </div>
-
-        <!-- Result -->
-        <div style="background:rgba(13,156,82,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-          <div>
-            <div style="font-weight:600;font-size:14px;color:#22c55e">All conditions met 🚀</div>
-            <div style="font-size:12.5px;color:var(--fg2);margin-top:2px">Telegram message sent · AAPL · Strategy 4 thresholds applied</div>
-          </div>
-          <div style="font-family:var(--font-mono);font-size:12px;color:var(--fg3)">4/4 conditions · 0 filters triggered</div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SIGNAL PERFORMANCE -->
-<section>
-  <div class="wrap">
-    <div class="section-label">Track record</div>
-    <h2>Screener performance</h2>
-    <p class="section-sub">Monthly reports are auto-generated on the 1st of each month, analyzing how past condition matches performed. Updated as history builds.</p>
-    <div id="articles-container">
-      <div style="text-align:center;padding:28px;color:var(--fg2);font-size:13.5px">Loading articles...</div>
-    </div>
-    <script>
-    fetch('https://stock-alert-bot-production-bfe5.up.railway.app/articles')
-      .then(r => r.json())
-      .then(articles => {
-        const container = document.getElementById('articles-container');
-        if (!articles || articles.length === 0) {
-          container.innerHTML = '<div style="text-align:center;padding:28px;color:var(--fg2)">No articles yet.</div>';
-          return;
-        }
-        const sorted = [...articles].reverse();
-        container.innerHTML = sorted.map(a => {
-          const pct = a.return_pct;
-          const isGain = pct >= 0;
-          return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:14px;box-shadow:var(--card-shadow)">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
-              <div>
-                <div style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);margin-bottom:6px">${a.month}</div>
-                <div style="font-weight:600;font-size:15px;margin-bottom:6px">${a.ticker} — ${isGain ? '+' : ''}${pct}% in ${a.days_held} days</div>
-                <div style="color:var(--fg2);font-size:13.5px">${a.headline}</div>
-              </div>
-              <div style="background:${isGain ? 'var(--green-dim)' : 'var(--amber-dim)'};color:${isGain ? 'var(--green)' : 'var(--amber)'};font-weight:700;font-size:18px;padding:10px 18px;border-radius:8px;white-space:nowrap">${isGain ? '+' : ''}${pct}%</div>
-            </div>
-          </div>`;
-        }).join('');
-      })
-      .catch(() => {
-        document.getElementById('articles-container').innerHTML = '<div style="text-align:center;padding:28px;color:var(--fg2)">Could not load articles.</div>';
-      });
-    </script>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section>
-  <div class="wrap">
-    <div class="section-label">About</div>
-    <h2>Built by one person.</h2>
-    <p class="section-sub">No team, no investors, no marketing budget.</p>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:28px;max-width:620px;box-shadow:var(--card-shadow)">
-      <p style="color:var(--fg2);font-size:14px;line-height:1.75;margin:0 0 16px">FourConditionBot started as a personal tool to remove emotion from research. Instead of scrolling charts for hours looking for setups, the bot does the scanning — and only notifies you when something actually meets the criteria.</p>
-      <p style="color:var(--fg2);font-size:14px;line-height:1.75;margin:0 0 20px">It's built and maintained by a solo developer. The code is real, the screener runs live, and the filters exist because noisy tools that don't account for earnings risk or collapsing stocks are useless.</p>
-      <div style="display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--border)">
-        <div style="width:40px;height:40px;border-radius:50%;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:18px">👤</div>
-        <div>
-          <div style="font-weight:600;font-size:14px">Vladimir</div>
-          <div style="font-size:12.5px;color:var(--fg2)">Builder · <a href="mailto:fourconditionbot@gmail.com" style="color:var(--accent)">fourconditionbot@gmail.com</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section id="faq">
-  <div class="wrap">
-    <div class="section-label">Questions</div>
-    <h2>Frequently asked</h2>
-    <p class="section-sub" style="margin-bottom:32px">Everything you need to know before you start.</p>
-
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Is this financial advice? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">No. FourConditionBot is a technical screening tool. Signals indicate when certain conditions align on a chart — they are not buy or sell recommendations. Always do your own research before making any trade.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">How do signals actually work? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">Every 30 minutes, the bot scans your entire watchlist. US stocks are scanned during market hours; crypto runs 24/7. If an asset passes all four conditions (price below 20MA, RSI below 50, near lower Bollinger Band) and clears every smart filter — earnings blackout, trend gate, 52-week low guard, velocity guard, EPS trend, and penny filter — you get a Telegram message. The velocity guard is new: it blocks stocks that look cheap on headroom math but are actually in freefall (price >12% below the 20MA or a >15% drop in 5 sessions). A 5-day cooldown prevents the same ticker firing repeatedly on the same setup, and a daily cap of 3 signals per ticker per day prevents alert fatigue from fast-moving assets like crypto. Your personal strategy adjusts which thresholds are used.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">What is the quiz and why does it matter? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">When you first message the bot, a 10-question quiz determines your investment strategy out of 10 options — from Conservative Income to Aggressive Growth to fully Custom. Your strategy sets the signal thresholds (RSI level, Bollinger proximity, trend gate strictness) so the alerts match how you actually invest. You can retake it or switch to custom mode anytime.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Is it free? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">The core bot is free — you get live alerts, up to 150 stocks on your watchlist, and all 10 strategies to switch between anytime. Pro ($5/mo) adds crypto, London &amp; Asia markets, signal history, and a weekly digest. Elite ($10/mo) expands your watchlist to 999 slots and raises all limits. <a href="upgrade/" style="color:var(--accent)">See all plans →</a></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Which stocks does it cover? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">You build your own watchlist from any US-listed stock, crypto (BTC-USD, ETH-USD, SOL-USD and more), London-listed stocks (.L), or Asia markets (.HK, .T). Sector packs (Tech, Finance, Health, Energy, Universal) are free. Crypto, London, and Asia packs require Pro. Data is sourced from Yahoo Finance and Polygon.io.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">What data is stored about me? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">Only your Telegram chat ID, your watchlist, your strategy settings, and your signal history. No name, no email, no payment info. Data is stored on Railway servers in the US. You can request deletion by emailing fourconditionbot@gmail.com and it will be removed within 7 days.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Why has there been no signal for a while? <span class="faq-arrow">▾</span></button>
-        <div class="faq-a">All four conditions must align at the same time. In trending or choppy markets, stocks rarely pull back to the Bollinger lower band while also having RSI below 50. Fewer signals means fewer setups worth considering — that is intentional. Quality over quantity.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="wrap">
-    <h2>Ready to cut the noise?</h2>
-    <p>Three steps. Takes under a minute. Start free.</p>
-    <div class="setup-steps">
-      <div class="setup-step">
-        <div class="setup-step-n">1</div>
-        Open FourConditionBot on Telegram
-      </div>
-      <div class="setup-arrow">→</div>
-      <div class="setup-step">
-        <div class="setup-step-n">2</div>
-        Take the 10-question strategy quiz
-      </div>
-      <div class="setup-arrow">→</div>
-      <div class="setup-step">
-        <div class="setup-step-n">3</div>
-        Add tickers and wait for signals
-      </div>
-    </div>
-    <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener" style="font-size:15px;padding:12px 28px">Open on Telegram →</a>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <span class="footer-left">© 2026 FourConditionBot · Not financial advice</span>
-    <div class="footer-links">
+    <span>© 2026 FourConditionBot · Not financial advice</span>
+    <nav aria-label="Footer">
+      <a href="/upgrade/">Plans</a>
       <a href="/terms/">Terms</a>
       <a href="/privacy/">Privacy</a>
       <a href="/refunds/">Refunds</a>
       <a href="mailto:fourconditionbot@gmail.com">Contact</a>
-    </div>
+    </nav>
   </div>
 </footer>
 
-<!-- TERMS MODAL -->
-<div class="modal-overlay" id="modal-terms" hidden>
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('terms')">✕</button>
-    <div class="modal-title">Terms of Service</div>
-    <div class="modal-body">
-      <h3>1. Acceptance</h3>
-      By using FourConditionBot you agree to these terms. If you do not agree, stop using the service.
-      <h3>2. No financial advice</h3>
-      All signals and content are for informational purposes only. Nothing here constitutes investment advice. You make your own trading decisions.
-      <h3>3. No warranties</h3>
-      The service is provided as-is. We make no guarantees about uptime, accuracy, or signal performance.
-      <h3>4. Limitation of liability</h3>
-      FourConditionBot and its creator are not liable for any trading losses or decisions made based on signals.
-      <h3>5. Eligibility</h3>
-      You must be of legal age in your jurisdiction to use financial tools.
-      <h3>6. Changes</h3>
-      Terms may change at any time. Continued use constitutes acceptance.
-      <h3>Contact</h3>
-      fourconditionbot@gmail.com
-    </div>
-  </div>
+<div class="mbar">
+  <a href="/upgrade/" class="btn btn-coral-outline">Plans</a>
+  <a href="https://t.me/FourConditionBot" class="btn btn-coral" target="_blank" rel="noopener">Start on Telegram</a>
 </div>
 
-<!-- PRIVACY MODAL -->
-<div class="modal-overlay" id="modal-privacy" hidden>
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('privacy')">✕</button>
-    <div class="modal-title">Privacy Policy</div>
-    <div class="modal-body">
-      <h3>What we collect</h3>
-      Your Telegram chat ID, watchlist, strategy settings, and signal history. Nothing else.
-      <h3>How it's used</h3>
-      To deliver signals to you and remember your preferences. Never sold or shared with third parties.
-      <h3>Storage</h3>
-      Data is stored on Railway servers in the United States.
-      <h3>Deletion</h3>
-      Email fourconditionbot@gmail.com to request deletion. Processed within 7 days.
-      <h3>Cookies</h3>
-      This website uses a single cookie to remember your cookie consent choice.
-      <h3>Third-party services</h3>
-      Telegram (message delivery), Yahoo Finance and Polygon.io (market data), Plausible Analytics (anonymous traffic stats — no personal data).
-      <h3>Contact</h3>
-      fourconditionbot@gmail.com
-    </div>
-  </div>
-</div>
-
-<!-- COOKIE BAR -->
-<div class="cookie-bar" id="cookie-bar">
-  <span>This site uses one cookie to remember your consent.</span>
+<div class="cookie" id="cookie" role="region" aria-label="Cookie consent" hidden>
+  <p>We use privacy-friendly, cookie-free analytics to count visits. Allow it?</p>
   <div class="cookie-actions">
-    <button class="btn-sm btn-sm-ghost" onclick="dismissCookie()">Decline</button>
-    <button class="btn-sm btn-sm-accent" onclick="acceptCookie()">Accept</button>
+    <button class="btn btn-sm btn-outline" data-consent="declined">Decline</button>
+    <button class="btn btn-sm btn-coral" data-consent="accepted">Allow</button>
   </div>
 </div>
 
+<script src="/site.js" defer></script>
 <script>
-// Cookie banner
-(function(){
-  try {
-    if (localStorage.getItem('cookie_consent')) {
-      document.getElementById('cookie-bar').hidden = true;
-    }
-  } catch(e){}
+// Monthly reports — API data is untrusted, so every field is escaped before it touches the DOM.
+(function () {
+  var box = document.getElementById('articles');
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); };
+  fetch('https://stock-alert-bot-production-bfe5.up.railway.app/articles')
+    .then(function (r) { if (!r.ok) throw r; return r.json(); })
+    .then(function (list) {
+      if (!Array.isArray(list) || !list.length) { box.innerHTML = '<p class="muted">The first report lands on the 1st of next month.</p>'; return; }
+      box.innerHTML = list.slice().reverse().map(function (a) {
+        var pct = Number(a.return_pct), up = pct >= 0, sign = up ? '+' : '';
+        return '<article class="article"><div><div class="m">' + esc(a.month) + '</div><h3>' + esc(a.ticker) + ' · ' + sign + esc(pct) + '% in ' + esc(a.days_held) + ' days</h3><p>' + esc(a.headline) + '</p></div><div class="r ' + (up ? 'up' : 'down') + '">' + sign + esc(pct) + '%</div></article>';
+      }).join('');
+    })
+    .catch(function () { box.innerHTML = '<p class="muted">Reports couldn’t load right now. Try again later.</p>'; });
 })();
-
-function acceptCookie() {
-  try { localStorage.setItem('cookie_consent','accepted'); } catch(e){}
-  document.getElementById('cookie-bar').hidden = true;
-}
-function dismissCookie() {
-  try { localStorage.setItem('cookie_consent','declined'); } catch(e){}
-  document.getElementById('cookie-bar').hidden = true;
-}
-
-// FAQ
-function toggleFaq(btn) {
-  const item = btn.closest('.faq-item');
-  item.classList.toggle('open');
-}
-
-// Modals
-function openModal(id) {
-  document.getElementById('modal-'+id).hidden = false;
-}
-function closeModal(id) {
-  document.getElementById('modal-'+id).hidden = true;
-}
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', function(e) {
-    if (e.target === el) el.hidden = true;
-  });
-});
 </script>
-
-<!-- MOBILE STICKY BOTTOM BAR -->
-<div class="mobile-bottom-bar">
-  <a href="upgrade/" class="btn-upgrade">Plans ✦</a>
-  <a href="https://t.me/FourConditionBot" class="btn-primary" target="_blank" rel="noopener">Open Telegram →</a>
-</div>
+</body>
+</html>

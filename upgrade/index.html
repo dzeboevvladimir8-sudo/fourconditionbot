@@ -2,506 +2,201 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Upgrade — FourConditionBot</title>
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plans &amp; pricing — FourConditionBot</title>
+<meta name="description" content="Free, Pro ($5/mo) and Elite ($10/mo) plans for FourConditionBot. Add crypto, London and Asia markets, signal history and a bigger watchlist. Cancel any time.">
+<link rel="canonical" href="https://fourcondition.app/upgrade/">
+<meta name="theme-color" content="#0d1b2a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FourConditionBot">
+<meta property="og:url" content="https://fourcondition.app/upgrade/">
+<meta property="og:title" content="FourConditionBot plans — Free, Pro and Elite">
+<meta property="og:description" content="More markets, signal history and a bigger watchlist. From $5/mo, cancel any time.">
+<meta property="og:image" content="https://fourcondition.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<link rel="stylesheet" href="/style.css">
 <style>
-:root {
-  --bg: #0b0f1a;
-  --bg2: #131929;
-  --bg3: #1a2235;
-  --fg: #e8ecf4;
-  --fg2: #8a97a8;
-  --fg3: #4a5568;
-  --border: rgba(255,255,255,0.09);
-  --accent: #4f83f0;
-  --accent-dim: #1a2847;
-  --green: #22c55e;
-  --green-dim: #0d2818;
-  --amber: #fbbf24;
-  --purple: #a78bfa;
-  --purple-dim: #1e1535;
-  --font: 'DM Sans', system-ui, sans-serif;
-  --font-mono: 'DM Mono', monospace;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--fg);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
+.head { text-align: center; padding: 72px 0 40px; }
+.head h1 { font-size: clamp(38px, 6vw, 60px); }
+.head .lede { margin: 16px auto 0; }
 
-/* NAV */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  height: 56px;
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--bg);
-}
-.nav-logo {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--fg);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.nav-logo span { color: var(--accent); }
-.nav-back {
-  font-size: 13px;
-  color: var(--fg2);
-  text-decoration: none;
-}
-.nav-back:hover { color: var(--fg); }
+.step { max-width: 520px; margin: 0 auto 56px; padding: 24px; border: 1px solid var(--line); border-radius: 6px; background: var(--navy-2); }
+.step.done { border-color: var(--pass); }
+.step label { display: block; font-weight: 600; margin-bottom: 4px; }
+.step .help { color: var(--cream-2); font-size: 14px; margin-bottom: 16px; }
+.field-row { display: flex; gap: 10px; }
+.field { flex: 1; display: flex; align-items: center; min-height: 44px; padding: 0 12px; background: var(--navy); border: 1px solid var(--line); border-radius: var(--radius); }
+.field:focus-within { border-color: var(--cream-2); }
+.field span { font-family: var(--mono); color: var(--cream-3); margin-right: 2px; }
+.field input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--cream); font: 15px var(--mono); padding: 10px 0; }
+.field input::placeholder { color: var(--cream-3); }
+.field.invalid { border-color: var(--warn); }
+.msg { font-size: 14px; min-height: 20px; margin-top: 8px; }
+.msg.error { color: var(--warn); }
+.msg.ok { color: var(--pass); }
+@media (max-width: 480px) { .field-row { flex-direction: column; } }
 
-/* HERO */
-.hero {
-  text-align: center;
-  padding: 64px 24px 48px;
-  max-width: 640px;
-  margin: 0 auto;
-}
-.hero-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
-}
-.hero h1 {
-  font-size: clamp(26px, 5vw, 38px);
-  font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 14px;
-}
-.hero p {
-  color: var(--fg2);
-  font-size: 15px;
-  line-height: 1.7;
-}
-
-/* TELEGRAM LOGIN */
-.tg-section {
-  max-width: 480px;
-  margin: 0 auto 48px;
-  padding: 0 24px;
-}
-.tg-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-}
-.tg-card.connected {
-  border-color: var(--green);
-}
-.tg-title {
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-.tg-sub {
-  color: var(--fg2);
-  font-size: 13px;
-  margin-bottom: 18px;
-}
-.tg-input-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  align-items: center;
-}
-.tg-input-wrap {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0 12px;
-  transition: border-color .15s;
-}
-.tg-input-wrap:focus-within {
-  border-color: var(--accent);
-}
-.tg-at {
-  color: var(--fg3);
-  font-family: var(--font-mono);
-  font-size: 15px;
-  margin-right: 4px;
-  user-select: none;
-}
-.tg-input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--fg);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  padding: 12px 0;
-}
-.tg-input::placeholder { color: var(--fg3); }
-.tg-confirm-btn {
-  padding: 12px 20px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity .15s;
-}
-.tg-confirm-btn:hover { opacity: .85; }
-.tg-hint {
-  font-size: 12px;
-  margin-top: 8px;
-  min-height: 16px;
-  color: var(--fg3);
-}
-.tg-hint.error { color: #f87171; }
-.tg-hint.success { color: var(--green); }
-.tg-user {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-.tg-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--green-dim);
-  color: var(--green);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.tg-name { font-weight: 600; font-size: 14px; }
-.tg-id { font-size: 12px; color: var(--green); }
-
-/* PLANS */
-.plans {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px 80px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-.plan-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: relative;
-  transition: border-color .2s;
-}
-.plan-card.featured {
-  border-color: var(--accent);
-}
-.plan-badge {
-  position: absolute;
-  top: -11px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--accent);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  padding: 3px 12px;
-  border-radius: 99px;
-  white-space: nowrap;
-}
-.plan-header {}
-.plan-name {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--fg2);
-  margin-bottom: 8px;
-}
-.plan-price {
-  font-size: 36px;
-  font-weight: 600;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.plan-price sup { font-size: 18px; vertical-align: super; }
-.plan-price span { font-size: 14px; font-weight: 400; color: var(--fg2); }
-.plan-desc {
-  color: var(--fg2);
-  font-size: 13px;
-  line-height: 1.6;
-  margin-top: 8px;
-}
-.plan-features {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-}
-.plan-features li {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13.5px;
-  color: var(--fg2);
-}
-.plan-features li .check {
-  color: var(--green);
-  font-size: 14px;
-  margin-top: 1px;
-  flex-shrink: 0;
-}
-.plan-features li strong { color: var(--fg); }
-.plan-btn {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  border-radius: 8px;
-  border: none;
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity .15s, transform .1s;
-  text-align: center;
-}
-.plan-btn:hover { opacity: .88; transform: translateY(-1px); }
-.plan-btn:active { transform: translateY(0); }
-.plan-btn.primary { background: var(--accent); color: #fff; }
-.plan-btn.secondary { background: var(--purple); color: #fff; }
-.plan-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-
-.plan-card.free-card {
-  border-style: dashed;
-  opacity: .7;
-}
-.plan-btn.free-btn {
-  background: var(--bg3);
-  color: var(--fg2);
-  cursor: default;
-}
-.plan-btn.free-btn:hover { opacity: 1; transform: none; }
-
-/* LOGIN REQUIRED NOTICE */
-.login-notice {
-  font-size: 12px;
-  color: var(--fg3);
-  text-align: center;
-  margin-top: -4px;
-}
-
-/* FOOTER */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 24px;
-  text-align: center;
-  color: var(--fg3);
-  font-size: 12.5px;
-}
-footer a { color: var(--fg2); text-decoration: none; }
-footer a:hover { color: var(--fg); }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 6px; margin-bottom: 96px; }
+.plan { padding: 32px 28px; display: flex; flex-direction: column; gap: 20px; }
+.plan + .plan { border-left: 1px solid var(--line); }
+.plan.featured { background: var(--navy-2); box-shadow: inset 0 3px 0 var(--coral); }
+.plan-name { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream-2); display: flex; justify-content: space-between; }
+.plan-name em { font-style: normal; color: var(--coral); }
+.price { font-family: var(--serif); font-size: 56px; line-height: 1; }
+.price small { font-family: var(--sans); font-size: 15px; color: var(--cream-3); }
+.plan p { color: var(--cream-2); font-size: 15px; }
+.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; flex: 1; }
+.plan li { padding-left: 22px; position: relative; color: var(--cream-2); font-size: 15px; }
+.plan li::before { content: ""; position: absolute; left: 0; top: .6em; width: 10px; height: 2px; background: var(--cream-3); }
+.plan li strong { color: var(--cream); font-weight: 500; }
+.plan .btn { width: 100%; }
+.plan .hint { font-size: 13px; color: var(--cream-3); text-align: center; margin-top: -8px; }
+@media (max-width: 820px) { .plans { grid-template-columns: 1fr; } .plan + .plan { border-left: 0; border-top: 1px solid var(--line); } }
 </style>
 </head>
 <body>
-
-<nav>
-  <a class="nav-logo" href="../">Four<span>Condition</span>Bot</a>
-  <a class="nav-back" href="../">← Back to home</a>
-</nav>
-
-<div class="hero">
-  <div class="hero-label">Upgrade</div>
-  <h1>Get more from your screener</h1>
-  <p>Unlock more markets, smarter filters, and deeper tools. Cancel anytime.</p>
-</div>
-
-<!-- TELEGRAM USERNAME INPUT -->
-<div class="tg-section">
-  <div class="tg-card" id="tg-card">
-    <div class="tg-title">Step 1 — Enter your Telegram username</div>
-    <div class="tg-sub">This is your <strong>@username</strong> — not your display name. Find it in Telegram → Settings → Username.</div>
-    <div class="tg-input-row" id="tg-input-row">
-      <div class="tg-input-wrap">
-        <span class="tg-at">@</span>
-        <input
-          type="text"
-          id="tg-username-input"
-          class="tg-input"
-          placeholder="your_username"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-        >
-      </div>
-      <button class="tg-confirm-btn" onclick="confirmUsername()">Confirm</button>
-    </div>
-    <div class="tg-hint" id="tg-hint"></div>
-    <div class="tg-user" id="tg-user">
-      <div class="tg-avatar">✓</div>
-      <div>
-        <div class="tg-name" id="tg-name"></div>
-        <div class="tg-id">Username confirmed — you can now upgrade below</div>
-      </div>
-    </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a href="/" class="logo" aria-label="FourConditionBot home">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="11" height="11" fill="#f4ecdc"/><rect x="18" y="3" width="11" height="11" fill="#f4ecdc"/><rect x="3" y="18" width="11" height="11" fill="#f4ecdc"/><rect x="18" y="18" width="11" height="11" fill="#f26b5b"/></svg>
+      FourConditionBot
+    </a>
+    <nav class="nav-links" aria-label="Main"><a href="/">← Back to home</a></nav>
   </div>
-</div>
+</header>
 
-<!-- PLANS -->
-<div class="plans">
+<main id="main" class="wrap">
+  <div class="head">
+    <p class="eyebrow">Plans</p>
+    <h1>More markets. More control.</h1>
+    <p class="lede">Start free and upgrade when you need more. Cancel any time from the bot.</p>
+  </div>
 
-  <!-- FREE -->
-  <div class="plan-card free-card">
-    <div class="plan-header">
+  <form class="step" id="tg-form" novalidate>
+    <label for="tg-username">Step 1: your Telegram username</label>
+    <p class="help" id="tg-help">Your <strong>@username</strong>, not your display name. Find it in Telegram → Settings. We use it to link your payment to your account.</p>
+    <div class="field-row">
+      <div class="field" id="tg-field"><span aria-hidden="true">@</span>
+        <input id="tg-username" name="username" type="text" placeholder="your_username" required minlength="5" maxlength="32" pattern="[A-Za-z0-9_]{5,32}" autocomplete="username" autocapitalize="off" spellcheck="false" aria-describedby="tg-help tg-msg">
+      </div>
+      <button class="btn btn-outline" type="submit" id="tg-submit">Confirm</button>
+    </div>
+    <p class="msg" id="tg-msg" role="status" aria-live="polite"></p>
+  </form>
+
+  <div class="plans">
+    <div class="plan">
       <div class="plan-name">Free</div>
-      <div class="plan-price"><sup>$</sup>0<span>/mo</span></div>
-      <div class="plan-desc">The basics, always free.</div>
+      <div class="price">$0<small> /mo</small></div>
+      <p>The full four-condition screener, always free.</p>
+      <ul>
+        <li><strong>150-ticker</strong> watchlist</li>
+        <li><strong>All 10 strategies</strong>, switch any time</li>
+        <li>Live Telegram alerts</li>
+        <li>Sector packs</li>
+      </ul>
+      <a class="btn btn-outline" href="https://t.me/FourConditionBot" target="_blank" rel="noopener">Start free</a>
     </div>
-    <ul class="plan-features">
-      <li><span class="check">✓</span><div><strong>150 stock</strong> watchlist</div></li>
-      <li><span class="check">✓</span><div><strong>All 10 strategies</strong>, switch anytime</div></li>
-      <li><span class="check">✓</span><div>Live Telegram alerts</div></li>
-      <li><span class="check">✓</span><div>4-condition signal logic</div></li>
-    </ul>
-    <button class="plan-btn free-btn" disabled>Current plan</button>
-  </div>
 
-  <!-- PRO -->
-  <div class="plan-card featured">
-    <div class="plan-badge">Most popular</div>
-    <div class="plan-header">
-      <div class="plan-name">Pro</div>
-      <div class="plan-price"><sup>$</sup>5<span>/mo</span></div>
-      <div class="plan-desc">More markets, more control.</div>
+    <div class="plan featured">
+      <div class="plan-name">Pro <em>Most popular</em></div>
+      <div class="price">$5<small> /mo</small></div>
+      <p>For traders who look beyond US stocks.</p>
+      <ul>
+        <li><strong>300-ticker</strong> watchlist</li>
+        <li><strong>Crypto, London &amp; Asia</strong> markets</li>
+        <li>Signal history with <code>/history</code></li>
+        <li>Weekly digest</li>
+      </ul>
+      <button class="btn btn-coral" id="pro-btn" data-plan="pro" disabled>Upgrade to Pro</button>
+      <p class="hint" id="pro-hint">Enter your username above first</p>
     </div>
-    <ul class="plan-features">
-      <li><span class="check">✓</span><div><strong>300 stock</strong> watchlist</div></li>
-      <li><span class="check">✓</span><div><strong>Crypto + London + Asia</strong> markets</div></li>
-      <li><span class="check">✓</span><div>Signal history — <code>/history TICKER</code></div></li>
-      <li><span class="check">✓</span><div>Weekly summary digest</div></li>
-    </ul>
-    <button class="plan-btn primary" id="pro-btn" onclick="checkout('pro')" disabled>
-      Upgrade to Pro
-    </button>
-    <div class="login-notice" id="pro-notice">Connect Telegram above first</div>
-  </div>
 
-  <!-- ELITE -->
-  <div class="plan-card">
-    <div class="plan-header">
+    <div class="plan">
       <div class="plan-name">Elite</div>
-      <div class="plan-price"><sup>$</sup>10<span>/mo</span></div>
-      <div class="plan-desc">Full power, priority access.</div>
+      <div class="price">$10<small> /mo</small></div>
+      <p>Everything, with the limits lifted.</p>
+      <ul>
+        <li>Everything in Pro</li>
+        <li><strong>999-ticker</strong> watchlist</li>
+        <li><strong>Custom thresholds</strong> for RSI, MA and bands</li>
+        <li><strong>Priority alerts</strong>, 30 minutes early</li>
+        <li>Portfolio P&amp;L tracker</li>
+        <li>Direct support from Vladimir</li>
+        <li>Early access to new features</li>
+      </ul>
+      <button class="btn btn-coral" id="elite-btn" data-plan="elite" disabled>Upgrade to Elite</button>
+      <p class="hint" id="elite-hint">Enter your username above first</p>
     </div>
-    <ul class="plan-features">
-      <li><span class="check">✓</span><div>Everything in Pro</div></li>
-      <li><span class="check">✓</span><div><strong>999 stock</strong> watchlist</div></li>
-      <li><span class="check">✓</span><div><strong>Custom thresholds</strong> — adjust RSI, MA, BB</div></li>
-      <li><span class="check">✓</span><div><strong>Priority alerts</strong> — 30 min early</div></li>
-      <li><span class="check">✓</span><div><strong>Portfolio P&amp;L tracker</strong></div></li>
-      <li><span class="check">✓</span><div>Direct support from Vladimir</div></li>
-      <li><span class="check">✓</span><div>Early access to new features</div></li>
-    </ul>
-    <button class="plan-btn secondary" id="elite-btn" onclick="checkout('elite')" disabled>
-      Upgrade to Elite
-    </button>
-    <div class="login-notice" id="elite-notice">Connect Telegram above first</div>
   </div>
+</main>
 
-</div>
-
-<footer>
-  <p>Questions? <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a> &nbsp;·&nbsp; <a href="../">Home</a></p>
-  <p style="margin-top:8px">Payments processed by <a href="https://lemonsqueezy.com" target="_blank">Lemon Squeezy</a>. Cancel anytime from your Telegram bot.</p>
+<footer class="footer">
+  <div class="wrap">
+    <span>Payments handled by Lemon Squeezy. Questions? <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a></span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/refunds/">Refunds</a></nav>
+  </div>
 </footer>
 
+<div class="cookie" id="cookie" role="region" aria-label="Cookie consent" hidden>
+  <p>We use privacy-friendly, cookie-free analytics to count visits. Allow it?</p>
+  <div class="cookie-actions">
+    <button class="btn btn-sm btn-outline" data-consent="declined">Decline</button>
+    <button class="btn btn-sm btn-coral" data-consent="accepted">Allow</button>
+  </div>
+</div>
+
+<script src="/site.js" defer></script>
 <script>
-let telegramUser = null;
+(function () {
+  // Replace with the real Lemon Squeezy checkout URLs once the store is approved.
+  var CHECKOUT_URLS = {
+    pro:   'https://fourconditionbot.lemonsqueezy.com/checkout/buy/REPLACE_PRO_ID',
+    elite: 'https://fourconditionbot.lemonsqueezy.com/checkout/buy/REPLACE_ELITE_ID'
+  };
+  var VALID = /^[A-Za-z0-9_]{5,32}$/;
+  var form = document.getElementById('tg-form'), input = document.getElementById('tg-username');
+  var field = document.getElementById('tg-field'), msg = document.getElementById('tg-msg');
+  var username = null;
 
-// ── USERNAME CONFIRM ──
-function confirmUsername() {
-  const input = document.getElementById('tg-username-input');
-  const hint = document.getElementById('tg-hint');
-  let username = input.value.trim().replace(/^@/, '');
-
-  if (!username) {
-    hint.textContent = 'Please enter your Telegram username.';
-    hint.className = 'tg-hint error';
-    return;
-  }
-  if (!/^[a-zA-Z0-9_]{5,32}$/.test(username)) {
-    hint.textContent = 'Usernames are 5–32 characters: letters, numbers, underscores only. No spaces.';
-    hint.className = 'tg-hint error';
-    return;
+  function error(text) {
+    msg.textContent = text; msg.className = 'msg error';
+    field.classList.add('invalid'); input.setAttribute('aria-invalid', 'true'); input.focus();
   }
 
-  telegramUser = { username };
-
-  document.getElementById('tg-card').classList.add('connected');
-  document.getElementById('tg-name').textContent = '@' + username;
-  document.getElementById('tg-user').style.display = 'flex';
-  document.getElementById('tg-input-row').style.display = 'none';
-  hint.textContent = '';
-  input.disabled = true;
-
-  document.getElementById('pro-btn').disabled = false;
-  document.getElementById('elite-btn').disabled = false;
-  document.getElementById('pro-notice').style.display = 'none';
-  document.getElementById('elite-notice').style.display = 'none';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('tg-username-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') confirmUsername();
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = input.value.trim().replace(/^@/, '');
+    if (!v) return error('Enter your Telegram username.');
+    if (!VALID.test(v)) return error('Usernames are 5–32 characters: letters, numbers and underscores only.');
+    username = v;
+    field.classList.remove('invalid'); input.removeAttribute('aria-invalid');
+    form.classList.add('done');
+    msg.textContent = 'Linked to @' + v + '. Choose a plan below.'; msg.className = 'msg ok';
+    ['pro', 'elite'].forEach(function (p) {
+      document.getElementById(p + '-btn').disabled = false;
+      document.getElementById(p + '-hint').hidden = true;
+    });
   });
-});
+  input.addEventListener('input', function () { if (field.classList.contains('invalid')) { field.classList.remove('invalid'); msg.textContent = ''; } });
 
-// ── CHECKOUT ──
-// Replace these with your real Lemon Squeezy checkout URLs once your products are created
-const CHECKOUT_URLS = {
-  pro:   'https://fourconditionbot.lemonsqueezy.com/checkout/buy/REPLACE_PRO_ID',
-  elite: 'https://fourconditionbot.lemonsqueezy.com/checkout/buy/REPLACE_ELITE_ID'
-};
-
-function checkout(plan) {
-  if (!telegramUser) return;
-  const url = new URL(CHECKOUT_URLS[plan]);
-  url.searchParams.set('checkout[custom][telegram_username]', telegramUser.username);
-  url.searchParams.set('checkout[custom][plan]', plan);
-  window.location.href = url.toString();
-}
+  document.querySelectorAll('[data-plan]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (!username) return;
+      var url = new URL(CHECKOUT_URLS[btn.getAttribute('data-plan')]);
+      url.searchParams.set('checkout[custom][telegram_username]', username);
+      url.searchParams.set('checkout[custom][plan]', btn.getAttribute('data-plan'));
+      window.location.href = url.toString();
+    });
+  });
+})();
 </script>
 </body>
 </html>
