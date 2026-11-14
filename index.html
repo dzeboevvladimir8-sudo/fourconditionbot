@@ -48,7 +48,7 @@
 .facts .i { width: 15px; height: 15px; color: var(--cream-2); }
 
 /* Product frame */
-.stage { position: relative; margin: 72px auto 0; max-width: 1120px; }
+.stage { position: relative; margin: 72px auto 0; max-width: 1120px; transform-origin: 50% 0%; will-change: transform; }
 .stage::before { content: ""; position: absolute; inset: -6% 8% 30%; background: radial-gradient(closest-side, rgba(242, 107, 91, .22), transparent); filter: blur(50px); z-index: -1; }
 .app { border-radius: 16px; overflow: hidden; text-align: left; background: linear-gradient(180deg, rgba(19, 36, 56, .92), rgba(11, 23, 36, .94)); border: 1px solid var(--line-2); box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 50px 100px -30px rgba(0, 0, 0, .8); }
 .app-bar { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--cream-3); }
@@ -368,6 +368,28 @@
 .cta-steps { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; margin: 40px 0 0; padding: 0; font: 13px var(--mono); color: var(--cream-3); }
 .cta-steps span { color: var(--coral); margin-right: 8px; }
 @media (max-width: 560px) { .cta { padding: 64px 18px; border-radius: 18px; } .cta .btn, .hero-actions .btn { width: 100%; } .hero-actions { flex-direction: column; } }
+
+/* Ticker marquee */
+.marquee { margin-top: 96px; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.marquee-track { display: flex; gap: 10px; width: max-content; animation: marquee 40s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.chip { display: inline-flex; gap: 10px; align-items: center; padding: 8px 14px; border-radius: 999px; font: 13px var(--mono); color: var(--cream-2); white-space: nowrap; background: var(--surface); border: 1px solid var(--line); }
+.chip em { font-style: normal; color: var(--cream-3); }
+.chip .qgrid.full ~ em { color: var(--pass); }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* Command palette */
+.palette { max-width: 720px; margin: 64px auto 0; overflow: hidden; }
+.palette-search { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--line); font-size: 16px; color: var(--cream-3); }
+.palette-search .caret { height: 20px; width: 2px; margin-left: 2px; vertical-align: middle; }
+.palette ul { list-style: none; margin: 0; padding: 8px; max-height: 340px; overflow-y: auto; }
+.palette li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14.5px; transition: background-color .25s; }
+.palette li code { background: none; border: 0; padding: 0; font-size: 14px; }
+.palette li span { color: var(--cream-3); text-align: right; }
+.palette li.active { background: var(--surface-2); }
+.palette li.active span { color: var(--cream-2); }
+.palette-foot { display: flex; justify-content: space-between; padding: 10px 20px; border-top: 1px solid var(--line); font: 12px var(--mono); color: var(--cream-3); }
+kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line-2); }
 </style>
 </head>
 <body class="has-mbar">
@@ -400,7 +422,7 @@
   <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
 </svg>
-<div class="bg" aria-hidden="true"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div class="bg" aria-hidden="true"><div class="orb-p" data-parallax="0.12"><div class="orb orb-1"></div></div><div class="orb-p" data-parallax="-0.08"><div class="orb orb-2"></div></div><div class="orb-p" data-parallax="0.05"><div class="orb orb-3"></div></div></div>
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="nav">
@@ -454,7 +476,7 @@
       <li><svg class="i" aria-hidden="true"><use href="#i-send"/></svg>Delivered on Telegram</li>
     </ul>
 
-    <div class="stage intro" style="--i:5" data-ticks="500">
+    <div class="stage intro" style="--i:5" data-ticks="500" data-scroll3d>
       <figure class="app" style="margin:0" aria-label="FourCondition monitor, illustrative example: a watchlist being scanned and NVDA passing all four conditions">
         <div class="app-bar">
           <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="11" height="11" rx="2" fill="#f4ecdc"/><rect x="18" y="3" width="11" height="11" rx="2" fill="#f4ecdc"/><rect x="3" y="18" width="11" height="11" rx="2" fill="#f4ecdc"/><rect x="18" y="18" width="11" height="11" rx="2" fill="#f26b5b"/></svg>
@@ -508,6 +530,7 @@
       </div>
     </div>
   </div>
+  <div class="marquee" aria-hidden="true"><div class="marquee-track"><span class="chip">AAPL <span class="qgrid row"><i class="on"></i><i class="on"></i><i></i><i></i></span><em>2/4</em></span><span class="chip">NVDA <span class="qgrid row full"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><em>4/4</em></span><span class="chip">BTC-USD <span class="qgrid row"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><em>3/4</em></span><span class="chip">TSLA <span class="qgrid row"><i></i><i></i><i></i><i></i></span><em>0/4</em></span><span class="chip">HSBA.L <span class="qgrid row"><i class="on"></i><i class="on"></i><i></i><i></i></span><em>2/4</em></span><span class="chip">JPM <span class="qgrid row full"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><em>4/4</em></span><span class="chip">ETH-USD <span class="qgrid row"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><em>3/4</em></span><span class="chip">0700.HK <span class="qgrid row"><i class="on"></i><i></i><i></i><i></i></span><em>1/4</em></span><span class="chip">AMZN <span class="qgrid row"><i class="on"></i><i class="on"></i><i></i><i></i></span><em>2/4</em></span><span class="chip">SOL-USD <span class="qgrid row"><i class="on"></i><i></i><i></i><i></i></span><em>1/4</em></span><span class="chip">COST <span class="qgrid row full"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><em>4/4</em></span><span class="chip">META <span class="qgrid row"><i class="on"></i><i></i><i></i><i></i></span><em>1/4</em></span><span class="chip">AAPL <span class="qgrid row"><i class="on"></i><i class="on"></i><i></i><i></i></span><em>2/4</em></span><span class="chip">NVDA <span class="qgrid row full"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><em>4/4</em></span><span class="chip">BTC-USD <span class="qgrid row"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><em>3/4</em></span><span class="chip">TSLA <span class="qgrid row"><i></i><i></i><i></i><i></i></span><em>0/4</em></span><span class="chip">HSBA.L <span class="qgrid row"><i class="on"></i><i class="on"></i><i></i><i></i></span><em>2/4</em></span><span class="chip">JPM <span class="qgrid row full"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><em>4/4</em></span><span class="chip">ETH-USD <span class="qgrid row"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><em>3/4</em></span><span class="chip">0700.HK <span class="qgrid row"><i class="on"></i><i></i><i></i><i></i></span><em>1/4</em></span><span class="chip">AMZN <span class="qgrid row"><i class="on"></i><i class="on"></i><i></i><i></i></span><em>2/4</em></span><span class="chip">SOL-USD <span class="qgrid row"><i class="on"></i><i></i><i></i><i></i></span><em>1/4</em></span><span class="chip">COST <span class="qgrid row full"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><em>4/4</em></span><span class="chip">META <span class="qgrid row"><i class="on"></i><i></i><i></i><i></i></span><em>1/4</em></span></div></div>
 </section>
 
 <!-- ═════════ PRODUCT ═════════ -->
@@ -522,7 +545,7 @@
     </div>
 
     <div class="bento">
-      <article class="tile panel b-7 reveal">
+      <article class="tile panel spot tilt b-7 reveal" data-tilt="3" data-from="left">
         <div class="tile-copy">
           <div class="tile-head"><span class="tile-label"><svg class="i" aria-hidden="true"><use href="#i-checks"/></svg>Evaluate</span><span class="tag">Illustrative</span></div>
           <h3 style="margin-top:16px">Every ticker, checked step by step</h3>
@@ -539,7 +562,7 @@
         </div>
       </article>
 
-      <article class="tile panel b-5 reveal" style="--i:1">
+      <article class="tile panel spot tilt b-5 reveal" style="--i:1" data-tilt="3" data-from="right">
         <div class="tile-copy">
           <div class="tile-head"><span class="tile-label"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg>Notify</span><span class="tag">Real format</span></div>
           <h3 style="margin-top:16px">One clear message in Telegram</h3>
@@ -561,7 +584,7 @@
         </div>
       </article>
 
-      <article class="tile panel b-5 reveal">
+      <article class="tile panel spot tilt b-5 reveal" data-tilt="3" data-from="left">
         <div class="tile-copy">
           <div class="tile-head"><span class="tile-label"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Configure</span><span class="tag">Your settings</span></div>
           <h3 style="margin-top:16px">Thresholds that match how you invest</h3>
@@ -583,7 +606,7 @@
         </div>
       </article>
 
-      <article class="tile panel b-7 reveal" style="--i:1">
+      <article class="tile panel spot tilt b-7 reveal" style="--i:1" data-tilt="3" data-from="right">
         <div class="tile-copy">
           <div class="tile-head"><span class="tile-label"><svg class="i" aria-hidden="true"><use href="#i-history"/></svg>Review</span><span class="tag tag-coral">Pro</span></div>
           <h3 style="margin-top:16px">Signal history you can look back on</h3>
@@ -612,6 +635,11 @@
       <div class="cap"><h3><svg class="i" aria-hidden="true"><use href="#i-eye-off"/></svg>Ignore list</h3><p>Mute tickers you never want to hear about with <code>/ignore</code>.</p></div>
       <div class="cap"><h3><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg>Global markets <span class="tag tag-coral">Pro</span></h3><p>Crypto, London and Asia listings. Crypto scans 24/7.</p></div>
       <div class="cap"><h3><svg class="i" aria-hidden="true"><use href="#i-file"/></svg>Monthly reports</h3><p>On the 1st of each month: how past alerts actually did.</p></div>
+    </div>
+    <div class="palette panel tilt reveal" data-tilt="3" aria-label="Bot commands">
+      <div class="palette-search"><span aria-hidden="true">/</span><span>Type a command<span class="caret" aria-hidden="true"></span></span></div>
+      <ul id="cmds"><li><code>/add TSLA AAPL</code><span>Add tickers</span></li><li><code>/remove TSLA</code><span>Remove a ticker</span></li><li><code>/list</code><span>Show watchlist</span></li><li><code>/status</code><span>Live prices</span></li><li><code>/topsignal</code><span>Best current setups</span></li><li><code>/profile</code><span>Your strategy</span></li><li><code>/retakequiz</code><span>Redo the quiz</span></li><li><code>/settings</code><span>Your thresholds</span></li><li><code>/set rsi 45</code><span>Change one setting</span></li><li><code>/resetsettings</code><span>Back to defaults</span></li><li><code>/packload tech</code><span>Load a sector pack</span></li><li><code>/ignore COIN</code><span>Mute a ticker</span></li><li><code>/remove all</code><span>Clear watchlist</span></li><li><code>/history</code><span>Signal history (Pro)</span></li><li><code>/digest stop</code><span>Pause digest</span></li><li><code>/digest start</code><span>Resume digest</span></li><li><code>/plan</code><span>Your current plan</span></li></ul>
+      <div class="palette-foot" aria-hidden="true"><span>17 commands</span><span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> to browse</span></div>
     </div>
   </div>
 </section>
@@ -659,7 +687,7 @@
     </div>
 
     <div class="quad">
-      <article class="cond panel spot lift reveal">
+      <article class="cond panel spot tilt reveal" data-tilt="6" data-from="left">
         <div class="cond-top"><span class="num">01</span><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-trend"/></svg></span></div>
         <h3>Trend</h3>
         <p class="rule">Price below its 20-day average</p>
@@ -667,7 +695,7 @@
         <span class="ind"><span class="tag">SMA(20)</span></span>
         <div class="viz" aria-hidden="true"><svg viewBox="0 0 300 96" preserveAspectRatio="none"><path d="M0,30 C80,28 160,36 240,46 S290,52 300,54" fill="none" stroke="#a39b8b" stroke-dasharray="4 4" stroke-width="1.5"/><path class="draw" d="M0,22 L30,18 L60,26 L90,16 L120,28 L150,34 L180,32 L210,48 L240,52 L270,64 L300,70" fill="none" stroke="#f26b5b" stroke-width="2.2"/></svg></div>
       </article>
-      <article class="cond panel spot lift reveal" style="--i:1">
+      <article class="cond panel spot tilt reveal" style="--i:1" data-tilt="6" data-from="left">
         <div class="cond-top"><span class="num">02</span><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-gauge"/></svg></span></div>
         <h3>Momentum</h3>
         <p class="rule">RSI under your threshold</p>
@@ -675,7 +703,7 @@
         <span class="ind"><span class="tag">RSI(14)</span></span>
         <div class="viz" aria-hidden="true"><span class="tickm" style="left:16px;transform:none">0</span><span class="tickm" style="left:50%">50</span><span class="tickm" style="right:16px;left:auto;transform:none">100</span><div class="gauge"></div><div class="needle"></div></div>
       </article>
-      <article class="cond panel spot lift reveal" style="--i:2">
+      <article class="cond panel spot tilt reveal" style="--i:2" data-tilt="6" data-from="right">
         <div class="cond-top"><span class="num">03</span><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-bars"/></svg></span></div>
         <h3>Volume</h3>
         <p class="rule">On-balance volume rising</p>
@@ -683,7 +711,7 @@
         <span class="ind"><span class="tag">OBV · 5 sessions</span></span>
         <div class="viz" aria-hidden="true"><div class="bars"><i style="--h:44%;--k:0"></i><i style="--h:38%;--k:1"></i><i style="--h:46%;--k:2"></i><i style="--h:40%;--k:3"></i><i style="--h:36%;--k:4"></i><i style="--h:48%;--k:5"></i><i style="--h:56%;--k:6"></i><i style="--h:62%;--k:7"></i><i style="--h:70%;--k:8"></i><i style="--h:80%;--k:9"></i></div></div>
       </article>
-      <article class="cond panel spot lift reveal" style="--i:3">
+      <article class="cond panel spot tilt reveal" style="--i:3" data-tilt="6" data-from="right">
         <div class="cond-top"><span class="num">04</span><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-wave"/></svg></span></div>
         <h3>Volatility</h3>
         <p class="rule">Within 2% of the lower band</p>
@@ -706,7 +734,7 @@
       <h3 class="reveal">The risk filters after the four conditions</h3>
       <p class="reveal" style="--i:1">A setup that passes all four conditions is still dropped if any of these trip.</p>
     </div>
-    <dl class="filters panel reveal">
+    <dl class="filters panel reveal" data-stagger data-from="left">
       <div><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><dt>Earnings blackout</dt><dd>No alerts from 5 days before to 3 days after an earnings report.</dd></div>
       <div><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><dt>52-week low guard</dt><dd>Blocks anything within 8% of a 52-week low or a recent 10-session low.</dd></div>
       <div><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><dt>Trend gate</dt><dd>Skips stocks more than 8% below their 200-day SMA, a sign of a real downtrend.</dd></div>
@@ -728,16 +756,16 @@
       <p class="lede reveal" style="--i:2">A 10-question quiz on your first message picks a strategy, and the strategy sets the thresholds for your risk, holding period and goals.</p>
     </div>
     <ol class="strategies" data-stagger="5">
-      <li class="glass spot lift"><span class="n">01</span><strong>Conservative Income</strong><span>Dividend focus, strict filters</span></li>
-      <li class="glass spot lift"><span class="n">02</span><strong>Balanced Growth</strong><span>Growth mixed with stability</span></li>
-      <li class="glass spot lift"><span class="n">03</span><strong>Aggressive Growth</strong><span>Wider thresholds, more risk</span></li>
-      <li class="glass spot lift"><span class="n">04</span><strong>Growth at Discount</strong><span>Quality names on real pullbacks</span></li>
-      <li class="glass spot lift"><span class="n">05</span><strong>Momentum Swing</strong><span>Short dips in trending stocks</span></li>
-      <li class="glass spot lift"><span class="n">06</span><strong>Sector Rotation</strong><span>Follows money between sectors</span></li>
-      <li class="glass spot lift"><span class="n">07</span><strong>Blue Chip Only</strong><span>Large caps, mean reversion</span></li>
-      <li class="glass spot lift"><span class="n">08</span><strong>Small Cap Hunter</strong><span>Smaller names, bigger swings</span></li>
-      <li class="glass spot lift"><span class="n">09</span><strong>Value Deep Dive</strong><span>Strong fundamentals, beaten down</span></li>
-      <li class="glass spot lift"><span class="n">10</span><strong>Custom</strong><span>Pick every indicator yourself</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">01</span><strong>Conservative Income</strong><span>Dividend focus, strict filters</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">02</span><strong>Balanced Growth</strong><span>Growth mixed with stability</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">03</span><strong>Aggressive Growth</strong><span>Wider thresholds, more risk</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">04</span><strong>Growth at Discount</strong><span>Quality names on real pullbacks</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">05</span><strong>Momentum Swing</strong><span>Short dips in trending stocks</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">06</span><strong>Sector Rotation</strong><span>Follows money between sectors</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">07</span><strong>Blue Chip Only</strong><span>Large caps, mean reversion</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">08</span><strong>Small Cap Hunter</strong><span>Smaller names, bigger swings</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">09</span><strong>Value Deep Dive</strong><span>Strong fundamentals, beaten down</span></li>
+      <li class="glass spot tilt" data-tilt="8"><span class="n">10</span><strong>Custom</strong><span>Pick every indicator yourself</span></li>
     </ol>
     <p class="note reveal">Changed your mind? Send <code>/retakequiz</code> any time, or pick Strategy 10 and set every threshold by hand.</p>
   </div>
@@ -747,12 +775,12 @@
 <section class="section divide" aria-labelledby="why-title">
   <div class="wrap why">
     <div class="why-lead">
-      <p class="eyebrow reveal">Why FourCondition</p>
+      <p class="eyebrow reveal" data-from="left">Why FourCondition</p>
       <h2 id="why-title" class="reveal" style="--i:1">Less noise. <span class="dim">More structure.</span></h2>
       <p class="lede reveal" style="--i:2">Most market tools add information. FourCondition removes it. The same rules run the same way on every scan, so what reaches you is consistent, explainable and rare.</p>
       <p class="quote reveal" style="--i:3"><strong>You make the call.</strong> A signal is a starting point for your own research, not an instruction to trade.</p>
     </div>
-    <ul class="why-list" data-stagger>
+    <ul class="why-list" data-stagger data-from="right">
       <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg></span><div><h3>Multiple-condition analysis</h3><p>Trend, momentum, volume and volatility have to agree. One indicator on its own is noise; four independent ones lining up is a structured event.</p></div></li>
       <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span><div><h3>Automated monitoring</h3><p>Scans every 30 minutes during US market hours, and around the clock for crypto on Pro. No charts to refresh.</p></div></li>
       <li><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-checks"/></svg></span><div><h3>Structured signal evaluation</h3><p>Fixed order, fixed thresholds from your strategy, and eight filters that drop earnings risk, falling knives and penny stocks.</p></div></li>
@@ -773,7 +801,7 @@
       <p class="lede reveal" style="--i:2">Reports are generated from the real alert history and published as they are, winners and losers alike. No back-filled results, no hand-picked trades.</p>
     </div>
 
-    <div class="report panel reveal">
+    <div class="report panel tilt reveal" data-tilt="2">
       <dl class="report-meta">
         <div><dt>Reporting period</dt><dd>Monthly, on the 1st</dd></div>
         <div><dt>Source</dt><dd>Live alert history</dd></div>
@@ -794,13 +822,13 @@
     <div>
       <p class="eyebrow reveal">About</p>
       <h2 id="about-title" class="reveal" style="--i:1">A focused tool for structured market monitoring.</h2>
-      <ul class="principles" data-stagger>
+      <ul class="principles" data-stagger data-from="left">
         <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Rules over opinions: every signal can be traced to its numbers.</li>
         <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Quiet by design: fewer, better-qualified alerts.</li>
         <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Honest reporting: results published from real alerts.</li>
       </ul>
     </div>
-    <div class="about-card panel spot reveal" style="--i:1">
+    <div class="about-card panel spot tilt reveal" style="--i:1" data-tilt="3" data-from="right">
       <p><strong>FourCondition is a market-monitoring system delivered through Telegram.</strong> It watches a list of stocks and crypto, evaluates each one against four technical conditions and a set of risk filters, and speaks up only when everything lines up.</p>
       <p>It started as a personal tool to take emotion out of research. Scrolling charts for hours produces a lot of opinions and very little structure, so the scanning, the checking and the filtering became code.</p>
       <p>It is independent: no team, no investors. The screener runs live, and every filter exists because a tool that ignores earnings risk or collapsing stocks isn't worth using.</p>
@@ -817,7 +845,7 @@
       <h2 id="faq-title" class="reveal" style="--i:1">Questions, answered.</h2>
       <p class="lede reveal" style="--i:2">Anything else? Email <a href="mailto:fourconditionbot@gmail.com">fourconditionbot@gmail.com</a>.</p>
     </div>
-    <div class="faq">
+    <div class="faq" data-stagger>
       <details><summary>What is FourCondition?<span class="pm" aria-hidden="true"></span></summary><p>A market-monitoring service that runs as a Telegram bot, @FourConditionBot. You give it a watchlist of stocks or crypto; it scans them every 30 minutes and messages you when a ticker meets all four of its technical conditions and clears its risk filters.</p></details>
       <details><summary>How does the four-condition system work?<span class="pm" aria-hidden="true"></span></summary><p>Each ticker is checked for trend (price below its 20-day moving average), momentum (RSI(14) under your strategy's threshold), volume (on-balance volume higher than five sessions ago) and volatility (price within 2% of the lower Bollinger Band). All four must be true at once. Then eight risk filters, such as the earnings blackout and the velocity guard, must also pass.</p></details>
       <details><summary>What markets and assets are supported?<span class="pm" aria-hidden="true"></span></summary><p>Any US-listed stock on every plan. Pro and Elite add crypto (BTC-USD, ETH-USD, SOL-USD and more), London (.L) and Asia (.HK, .T) listings. Market data comes from Yahoo Finance and Polygon.io.</p></details>
@@ -843,7 +871,7 @@
         <a href="https://t.me/FourConditionBot" class="btn btn-coral btn-lg" target="_blank" rel="noopener">Get Started <span class="arrow" aria-hidden="true">→</span></a>
         <a href="/upgrade/" class="btn btn-outline btn-lg">Compare plans</a>
       </div>
-      <ol class="cta-steps">
+      <ol class="cta-steps" data-stagger>
         <li><span>01</span>Open the bot</li>
         <li><span>02</span>Take the quiz</li>
         <li><span>03</span>Add your tickers</li>
@@ -920,6 +948,23 @@
         }).join('');
     })
     .catch(function () { empty('Reports couldn’t load right now', 'The report service didn’t respond. Please try again in a few minutes.'); });
+})();
+
+// Command palette: highlight cycles like someone is arrowing through it; hover takes over.
+(function () {
+  var items = document.querySelectorAll('#cmds li'), i = 0, timer;
+  if (!items.length) return;
+  var list = document.getElementById('cmds');
+  var set = function (n) {
+    items[i].classList.remove('active'); i = (n + items.length) % items.length; items[i].classList.add('active');
+    var top = items[i].offsetTop - list.offsetTop, h = items[i].offsetHeight;
+    if (top < list.scrollTop || top + h > list.scrollTop + list.clientHeight) list.scrollTop = top - list.clientHeight / 2;
+  };
+  set(0);
+  var start = function () { clearInterval(timer); timer = setInterval(function () { set(i + 1); }, 1400); };
+  items.forEach(function (li, n) { li.addEventListener('mouseenter', function () { clearInterval(timer); set(n); }); });
+  list.addEventListener('mouseleave', start);
+  start();
 })();
 </script>
 </body>

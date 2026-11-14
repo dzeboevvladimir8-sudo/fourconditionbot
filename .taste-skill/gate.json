@@ -1,0 +1,20 @@
+{
+ "history": [
+  {
+   "at": "2026-11-14T10:40:32.672Z",
+   "mode": "hook",
+   "host": "claude",
+   "decision": "allow",
+   "reason": "no build is active here",
+   "stopHookActive": false
+  },
+  {
+   "at": "2026-11-14T10:40:48.087Z",
+   "mode": "hook",
+   "host": "claude",
+   "decision": "allow",
+   "reason": "no build is active here",
+   "stopHookActive": true
+  }
+ ]
+}
