@@ -272,15 +272,24 @@
 @media (max-width: 760px) { .filters { grid-template-columns: 1fr; padding: 4px 18px; } .filters > div:nth-last-child(2) { border-bottom: 1px solid var(--line); } }
 
 /* ═════════ Strategies ═════════ */
-.strategies { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-.strategies li { padding: 20px; border-radius: 12px; }
-.strategies li:hover { border-color: rgba(242, 107, 91, .4); }
+.strategies { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 12px; align-items: start; }
+.strat { border-radius: 12px; transition: border-color .25s; }
+.strat:hover, .strat[open] { border-color: rgba(242, 107, 91, .45); }
+.strat summary { list-style: none; cursor: pointer; display: grid; gap: 6px; justify-items: start; padding: 20px; }
+.strat summary::-webkit-details-marker { display: none; }
+.strat-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .strategies .n { font: 500 12px var(--mono); color: var(--coral); }
-.strategies strong { display: block; font-weight: 600; letter-spacing: -0.02em; margin: 12px 0 4px; }
-.strategies span { color: var(--cream-3); font-size: 14px; }
+.strat .chev { width: 8px; height: 8px; border-right: 1.5px solid var(--cream-3); border-bottom: 1.5px solid var(--cream-3); transform: rotate(45deg); transition: transform .3s var(--ease), border-color .25s; }
+.strat:hover .chev, .strat[open] .chev { border-color: var(--coral); }
+.strat[open] .chev { transform: rotate(225deg); }
+.strategies strong { display: block; font-weight: 600; letter-spacing: -0.02em; margin-top: 6px; }
+.strat .d { color: var(--cream-3); font-size: 14px; }
+.strat .tag { margin-top: 6px; white-space: normal; }
+.strat[open] .tag { color: var(--coral); border-color: rgba(242, 107, 91, .4); background: rgba(242, 107, 91, .07); }
+.strat-conds { list-style: none; margin: 0; padding: 14px 20px 20px; border-top: 1px solid var(--line); display: grid; gap: 8px; font-size: 14px; color: var(--cream-2); }
+.strat-conds li { display: flex; gap: 10px; }
+.strat-conds li::before { content: ""; flex-shrink: 0; width: 6px; height: 6px; margin-top: 8px; border-radius: 2px; background: var(--coral); }
 .note { margin-top: 28px; color: var(--cream-2); text-align: center; }
-@media (max-width: 960px) { .strategies { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 600px) { .strategies { grid-template-columns: 1fr 1fr; } }
 
 /* ═════════ Why ═════════ */
 .why { display: grid; grid-template-columns: 1fr 1.15fr; gap: 64px; align-items: start; }
@@ -773,22 +782,52 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
   <div class="wrap">
     <div class="section-head center">
       <p class="eyebrow reveal">Strategies</p>
-      <h2 id="strat-title" class="reveal" style="--i:1">Ten strategies. One is yours.</h2>
-      <p class="lede reveal" style="--i:2">A 10-question quiz on your first message picks a strategy, and the strategy sets the thresholds for your risk, holding period and goals.</p>
+      <h2 id="strat-title" class="reveal" style="--i:1">Ten strategies. <span class="dim">One bot.</span></h2>
+      <p class="lede reveal" style="--i:2">Pick the approach that matches how you invest. Each strategy runs different indicators — same four-condition structure, different logic.</p>
     </div>
-    <ol class="strategies" data-stagger="5">
-      <li class="glass spot tilt" data-tilt="8"><span class="n">01</span><strong>Conservative Income</strong><span>Dividend focus, strict filters</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">02</span><strong>Balanced Growth</strong><span>Growth mixed with stability</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">03</span><strong>Aggressive Growth</strong><span>Wider thresholds, more risk</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">04</span><strong>Growth at Discount</strong><span>Quality names on real pullbacks</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">05</span><strong>Momentum Swing</strong><span>Short dips in trending stocks</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">06</span><strong>Sector Rotation</strong><span>Follows money between sectors</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">07</span><strong>Blue Chip Only</strong><span>Large caps, mean reversion</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">08</span><strong>Small Cap Hunter</strong><span>Smaller names, bigger swings</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">09</span><strong>Value Deep Dive</strong><span>Strong fundamentals, beaten down</span></li>
-      <li class="glass spot tilt" data-tilt="8"><span class="n">10</span><strong>Custom</strong><span>Pick every indicator yourself</span></li>
+    <ol class="strategies" data-stagger="2">
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">01</span><span class="chev" aria-hidden="true"></span></span><strong>Conservative Income</strong><span class="d">Stable, income-generating stocks on mean-reversion dips.</span><span class="tag">Best for: income investors</span></summary>
+        <ul class="strat-conds"><li>RSI below 45</li><li>Price below the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li><li>Within 2% of the lower Bollinger Band</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">02</span><span class="chev" aria-hidden="true"></span></span><strong>Growth Momentum</strong><span class="d">Pullbacks inside confirmed uptrends in high-growth stocks.</span><span class="tag">Best for: growth investors</span></summary>
+        <ul class="strat-conds"><li>RSI 40–55 (a pullback, not oversold)</li><li>Price above the 50-day SMA</li><li>MACD line above its signal line</li><li>Volume above 150% of its 20-day average</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">03</span><span class="chev" aria-hidden="true"></span></span><strong>Value Dip Buyer</strong><span class="d">Our original: oversold dips in fundamentally sound stocks.</span><span class="tag">Best for: value investors</span></summary>
+        <ul class="strat-conds"><li>RSI below 45</li><li>Price below the 20-day MA</li><li>OBV trending up over 5 sessions</li><li>Within 2% of the lower Bollinger Band</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">04</span><span class="chev" aria-hidden="true"></span></span><strong>Sector Rotation</strong><span class="d">Follows money as it moves between sectors.</span><span class="tag">Best for: macro-minded investors</span></summary>
+        <ul class="strat-conds"><li>RSI below 50</li><li>Price above the 200-day SMA</li><li>Volume above 120% of its 20-day average</li><li>RSI higher than 5 sessions ago</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">05</span><span class="chev" aria-hidden="true"></span></span><strong>Breakout Hunter</strong><span class="d">Stocks pressing 52-week highs on rising volume.</span><span class="tag">Best for: momentum traders</span></summary>
+        <ul class="strat-conds"><li>Within 5% of the 52-week high</li><li>Volume above 120% of its 20-day average</li><li>ATR expanding (higher than 10 sessions ago)</li><li>RSI 50–65</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">06</span><span class="chev" aria-hidden="true"></span></span><strong>Defensive Bear</strong><span class="d">Stocks holding up while the market falls.</span><span class="tag">Best for: cautious investors</span></summary>
+        <ul class="strat-conds"><li>RSI above 50 (relative strength)</li><li>Price above the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li><li>Price above the 50-day SMA</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">07</span><span class="chev" aria-hidden="true"></span></span><strong>Small Cap Momentum</strong><span class="d">Smaller, faster names with momentum. Higher risk.</span><span class="tag">Best for: higher-risk traders</span></summary>
+        <ul class="strat-conds"><li>Price between $10 and $100</li><li>RSI 45–60</li><li>Volume above 110% of its 30-day average</li><li>Price above the 20-day SMA</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">08</span><span class="chev" aria-hidden="true"></span></span><strong>Blue Chip Stability</strong><span class="d">Reliable large caps dipping inside long-term uptrends.</span><span class="tag">Best for: long-term investors</span></summary>
+        <ul class="strat-conds"><li>Price below the 20-day MA</li><li>RSI below 45</li><li>Price above the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">09</span><span class="chev" aria-hidden="true"></span></span><strong>Earnings Recovery</strong><span class="d">Improving companies pulled back after earnings.</span><span class="tag">Best for: turnaround investors</span></summary>
+        <ul class="strat-conds"><li>RSI below 45</li><li>OBV trending up over 5 sessions</li><li>Price below the 20-day MA</li><li>More than 15% below the 52-week high</li></ul>
+      </details></li>
+      <li><details class="strat glass spot">
+        <summary><span class="strat-top"><span class="n">10</span><span class="chev" aria-hidden="true"></span></span><strong>Advanced Custom</strong><span class="d">Build your own screen from the indicator menu.</span><span class="tag">Best for: experienced users</span></summary>
+        <ul class="strat-conds"><li>Choose your own four conditions</li><li>Set your own thresholds</li><li>Built in the bot's Advanced menu</li></ul>
+      </details></li>
     </ol>
-    <p class="note reveal">Changed your mind? Send <code>/retakequiz</code> any time, or pick Strategy 10 and set every threshold by hand.</p>
+    <p class="note reveal">A 10-question quiz on your first message picks one for you. Changed your mind? Send <code>/retakequiz</code> any time.</p>
   </div>
 </section>
 
