@@ -390,6 +390,27 @@
 .palette li.active span { color: var(--cream-2); }
 .palette-foot { display: flex; justify-content: space-between; padding: 10px 20px; border-top: 1px solid var(--line); font: 12px var(--mono); color: var(--cream-3); }
 kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line-2); }
+
+/* ═════════ Indicator explainer ═════════ */
+.explain { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.explain details { padding: 0; transition: border-color .3s; }
+.explain details[open] { border-color: rgba(242, 107, 91, .4); }
+.explain summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 38px 1fr 28px; align-items: center; gap: 16px; padding: 22px 24px; border-radius: inherit; }
+.explain summary::-webkit-details-marker { display: none; }
+.explain summary:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+.explain .ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); color: var(--cream); }
+.explain h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--cream); }
+.explain .hook { display: block; font-size: 14px; font-weight: 400; letter-spacing: 0; color: var(--cream-3); margin-top: 2px; }
+.explain .pm { position: relative; width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line-2); transition: border-color .3s, background-color .3s; }
+.explain .pm::before, .explain .pm::after { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 1.5px; margin: -.75px 0 0 -5.5px; background: var(--cream-2); transition: transform .3s var(--ease); }
+.explain .pm::after { transform: rotate(90deg); }
+.explain details[open] .pm { border-color: rgba(242, 107, 91, .5); background: rgba(242, 107, 91, .08); }
+.explain details[open] .pm::after { transform: rotate(0deg); }
+.explain dl { margin: 0; padding: 0 24px 24px; display: grid; gap: 14px; border-top: 1px solid var(--line); padding-top: 18px; }
+.explain dt { font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--coral); }
+.explain dd { margin: 4px 0 0; font-size: 15px; line-height: 1.6; color: var(--cream-2); }
+@media (max-width: 720px) { .explain { grid-template-columns: 1fr; } .explain summary { padding: 18px; gap: 14px; } .explain dl { padding: 16px 18px 20px; } }
+@media (prefers-reduced-motion: reduce) { .explain .pm::before, .explain .pm::after { transition: none; } }
 </style>
 </head>
 <body class="has-mbar">
@@ -638,7 +659,7 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
     </div>
     <div class="palette panel tilt reveal" data-tilt="3" aria-label="Bot commands">
       <div class="palette-search"><span aria-hidden="true">/</span><span>Type a command<span class="caret" aria-hidden="true"></span></span></div>
-      <ul id="cmds"><li><code>/add TSLA AAPL</code><span>Add tickers</span></li><li><code>/remove TSLA</code><span>Remove a ticker</span></li><li><code>/list</code><span>Show watchlist</span></li><li><code>/status</code><span>Live prices</span></li><li><code>/topsignal</code><span>Best current setups</span></li><li><code>/profile</code><span>Your strategy</span></li><li><code>/retakequiz</code><span>Redo the quiz</span></li><li><code>/settings</code><span>Your thresholds</span></li><li><code>/set rsi 45</code><span>Change one setting</span></li><li><code>/resetsettings</code><span>Back to defaults</span></li><li><code>/packload tech</code><span>Load a sector pack</span></li><li><code>/ignore COIN</code><span>Mute a ticker</span></li><li><code>/remove all</code><span>Clear watchlist</span></li><li><code>/history</code><span>Signal history (Pro)</span></li><li><code>/digest stop</code><span>Pause digest</span></li><li><code>/digest start</code><span>Resume digest</span></li><li><code>/plan</code><span>Your current plan</span></li></ul>
+      <ul id="cmds"><li><code>/add TSLA AAPL</code><span>Add tickers</span></li><li><code>/remove TSLA</code><span>Remove a ticker</span></li><li><code>/list</code><span>Show watchlist</span></li><li><code>/status</code><span>Live prices</span></li><li><code>/topsignal</code><span>Best current setups</span></li><li><code>/profile</code><span>Your strategy</span></li><li><code>/retakequiz</code><span>Redo the quiz</span></li><li><code>/settings</code><span>Your thresholds</span></li><li><code>/set rsi 45</code><span>Change one setting</span></li><li><code>/resetsettings</code><span>Back to defaults</span></li><li><code>/packload tech</code><span>Load a sector pack</span></li><li><code>/ignore COIN</code><span>Mute a ticker</span></li><li><code>/remove all</code><span>Clear watchlist</span></li><li><code>/history</code><span>Signal history (Pro)</span></li><li><code>/digest stop</code><span>Pause digest</span></li><li><code>/digest start</code><span>Resume digest</span></li><li><code>/plan</code><span>Your current plan</span></li><li><code>/quiz</code><span>Survey: +50 slots</span></li><li><code>/commands</code><span>Show all commands</span></li></ul>
       <div class="palette-foot" aria-hidden="true"><span>17 commands</span><span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> to browse</span></div>
     </div>
   </div>
@@ -837,6 +858,54 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
   </div>
 </section>
 
+<!-- ═════════ Indicator explainer ═════════ -->
+<section class="section divide" id="signals" aria-labelledby="signals-title">
+  <div class="wrap">
+    <div class="section-head split">
+      <div>
+        <p class="eyebrow reveal">Plain English</p>
+        <h2 id="signals-title" class="reveal" style="--i:1">Understand the signals.</h2>
+      </div>
+      <p class="lede reveal" style="--i:2">New to charts? Tap a card. Each one explains, in everyday words, what the bot is looking at and why it matters.</p>
+    </div>
+
+    <div class="explain" data-stagger>
+      <details class="panel spot">
+        <summary><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-gauge"/></svg></span><h3>RSI<span class="hook">Is the selling running out of steam?</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <dl>
+          <div><dt>What it is</dt><dd>RSI stands for Relative Strength Index. It's a score from 0 to 100 that sums up how hard a stock has been pushed up or down over the last couple of weeks.</dd></div>
+          <div><dt>What it measures</dt><dd>Whether recent days have mostly been up days or down days. A high score means buyers have been in charge; a low score means sellers have.</dd></div>
+          <div><dt>When the bot flags it</dt><dd>When the score drops below your strategy's line (around the mid-40s by default). That tells you the stock has had a cool-off, but not a crash. People have been selling, and the selling may be easing.</dd></div>
+        </dl>
+      </details>
+      <details class="panel spot">
+        <summary><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-trend"/></svg></span><h3>Moving Average<span class="hook">Is the price below its usual level?</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <dl>
+          <div><dt>What it is</dt><dd>The average closing price over the last 20 trading days, roughly one month. It's redrawn every day, so it moves along with the stock.</dd></div>
+          <div><dt>What it measures</dt><dd>What "normal" has looked like lately. Day-to-day price jumps are noisy; the average smooths them out so you can see the general direction.</dd></div>
+          <div><dt>When the bot flags it</dt><dd>When today's price sits below that one-month average. The stock is cheaper than it has been recently, a pullback. Prices often drift back toward their average, so a dip below it can be the start of a setup.</dd></div>
+        </dl>
+      </details>
+      <details class="panel spot">
+        <summary><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-wave"/></svg></span><h3>Bollinger Bands<span class="hook">Has the price stretched too far?</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <dl>
+          <div><dt>What it is</dt><dd>Two lines drawn above and below the one-month average, like the edges of a road. They widen when the stock gets jumpy and narrow when it calms down.</dd></div>
+          <div><dt>What it measures</dt><dd>The stock's normal range. Most of the time the price stays between the two lines, so touching an edge means it has moved further than usual.</dd></div>
+          <div><dt>When the bot flags it</dt><dd>When the price comes within 2% of the lower line. The stock is near the bottom of its normal range, stretched downward, which is where bounces back toward the middle tend to start.</dd></div>
+        </dl>
+      </details>
+      <details class="panel spot">
+        <summary><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-bars"/></svg></span><h3>Volume<span class="hook">Are buyers quietly stepping in?</span></h3><span class="pm" aria-hidden="true"></span></summary>
+        <dl>
+          <div><dt>What it is</dt><dd>Volume is how many shares change hands. The bot uses a running total called on-balance volume: it adds a day's volume when the price closes up and subtracts it when the price closes down.</dd></div>
+          <div><dt>What it measures</dt><dd>Where the real money is going. Price shows you the result; volume shows how many people took part and whether they were mostly buying or selling.</dd></div>
+          <div><dt>When the bot flags it</dt><dd>When that running total is higher than it was five trading days ago, even though the price has dipped. More shares are trading on up days than down days, a sign buyers are showing up while the price looks weak.</dd></div>
+        </dl>
+      </details>
+    </div>
+  </div>
+</section>
+
 <!-- ═════════ FAQ ═════════ -->
 <section class="section divide" id="faq" aria-labelledby="faq-title">
   <div class="wrap faq-wrap">
@@ -855,7 +924,7 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
       <details><summary>Does FourCondition guarantee results?<span class="pm" aria-hidden="true"></span></summary><p>No. Signals can and do fail, and past results do not guarantee future ones. The filters reduce some known risks but cannot remove them. See the <a href="/risk/">risk disclosure</a> and the monthly reports above.</p></details>
       <details><summary>How can I get started?<span class="pm" aria-hidden="true"></span></summary><p>Open <a href="https://t.me/FourConditionBot" target="_blank" rel="noopener">@FourConditionBot</a> in Telegram and press Start. Answer the 10-question quiz to pick a strategy, add tickers with <code>/add</code> or load a sector pack, and you're done. Free includes live alerts, a 150-ticker watchlist and all 10 strategies; <a href="/upgrade/">Pro and Elite</a> add more markets and history.</p></details>
       <details><summary>Why haven't I had a signal in a while?<span class="pm" aria-hidden="true"></span></summary><p>All four conditions rarely line up at once, especially in strong trends. A quiet bot is working as intended. <code>/topsignal</code> shows which names are closest to passing.</p></details>
-      <details><summary>What data do you store?<span class="pm" aria-hidden="true"></span></summary><p>Your Telegram chat ID, watchlist, strategy settings and signal history. No name, email or card details. Data lives on Railway servers in the US. Email fourconditionbot@gmail.com to have it deleted within 7 days.</p></details>
+      <details><summary>What data do you store?<span class="pm" aria-hidden="true"></span></summary><p>Your Telegram chat ID, watchlist, strategy settings and signal history, plus your answers if you take the optional /quiz survey. No name, email or card details. Data lives on Railway servers in the US. Email fourconditionbot@gmail.com to have it deleted within 7 days.</p></details>
     </div>
   </div>
 </section>
