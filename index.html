@@ -618,7 +618,7 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
         <div class="tile-copy">
           <div class="tile-head"><span class="tile-label"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Configure</span><span class="tag">Your settings</span></div>
           <h3 style="margin-top:16px">Thresholds that match how you invest</h3>
-          <p>A 10-question quiz sets your strategy. Change any single value with <code>/set</code>.</p>
+          <p>A 10-question quiz sets your strategy. Fine-tune any value with <code>/set</code>, free for everyone.</p>
         </div>
         <div class="ui">
           <div class="prompt">/settings<span class="caret" aria-hidden="true"></span></div>
@@ -626,11 +626,11 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
             <caption class="sr-only">Example settings</caption>
             <thead><tr><th scope="col">Setting</th><th scope="col" class="r">Value</th></tr></thead>
             <tbody>
-              <tr><td>RSI threshold</td><td class="r"><b>45</b></td></tr>
-              <tr><td>Bollinger proximity</td><td class="r"><b>1.02</b></td></tr>
+              <tr><td>Risk per trade</td><td class="r"><b>1%</b></td></tr>
+              <tr><td>Stop width (× ATR)</td><td class="r"><b>2.0</b></td></tr>
               <tr><td>Trend gate (below 200 SMA)</td><td class="r"><b>8%</b></td></tr>
               <tr><td>Earnings blackout</td><td class="r"><b>5d / 3d</b></td></tr>
-              <tr><td>ATR stop multiplier</td><td class="r"><b>2.0</b></td></tr>
+              <tr><td>Review after</td><td class="r"><b>20 days</b></td></tr>
             </tbody>
           </table>
         </div>
@@ -668,7 +668,7 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
     </div>
     <div class="palette panel tilt reveal" data-tilt="3" aria-label="Bot commands">
       <div class="palette-search"><span aria-hidden="true">/</span><span>Type a command<span class="caret" aria-hidden="true"></span></span></div>
-      <ul id="cmds"><li><code>/add TSLA AAPL</code><span>Add tickers</span></li><li><code>/remove TSLA</code><span>Remove a ticker</span></li><li><code>/list</code><span>Show watchlist</span></li><li><code>/status</code><span>Live prices</span></li><li><code>/topsignal</code><span>Best current setups</span></li><li><code>/profile</code><span>Your strategy</span></li><li><code>/retakequiz</code><span>Redo the quiz</span></li><li><code>/settings</code><span>Your thresholds</span></li><li><code>/set rsi 45</code><span>Change one setting</span></li><li><code>/resetsettings</code><span>Back to defaults</span></li><li><code>/packload tech</code><span>Load a sector pack</span></li><li><code>/ignore COIN</code><span>Mute a ticker</span></li><li><code>/remove all</code><span>Clear watchlist</span></li><li><code>/history</code><span>Signal history (Pro)</span></li><li><code>/digest stop</code><span>Pause digest</span></li><li><code>/digest start</code><span>Resume digest</span></li><li><code>/plan</code><span>Your current plan</span></li><li><code>/quiz</code><span>Survey: +50 slots</span></li><li><code>/commands</code><span>Show all commands</span></li></ul>
+      <ul id="cmds"><li><code>/add TSLA AAPL</code><span>Add tickers</span></li><li><code>/remove TSLA</code><span>Remove a ticker</span></li><li><code>/list</code><span>Show watchlist</span></li><li><code>/status</code><span>Live prices</span></li><li><code>/topsignal</code><span>Best current setups</span></li><li><code>/profile</code><span>Your strategy</span></li><li><code>/buildstrategy</code><span>Build your own strategy</span></li><li><code>/settings</code><span>Your risk &amp; alert settings</span></li><li><code>/set risk_pct 0.5</code><span>Change one setting</span></li><li><code>/resetsettings</code><span>Back to defaults</span></li><li><code>/packload tech</code><span>Load a sector pack</span></li><li><code>/ignore COIN</code><span>Mute a ticker</span></li><li><code>/remove all</code><span>Clear watchlist</span></li><li><code>/history</code><span>Signal history (Pro)</span></li><li><code>/digest stop</code><span>Pause digest</span></li><li><code>/digest start</code><span>Resume digest</span></li><li><code>/plan</code><span>Your current plan</span></li><li><code>/quiz</code><span>Survey: +50 slots</span></li><li><code>/commands</code><span>Show all commands</span></li></ul>
       <div class="palette-foot" aria-hidden="true"><span>17 commands</span><span><kbd>&uarr;</kbd> <kbd>&darr;</kbd> to browse</span></div>
     </div>
   </div>
@@ -782,52 +782,28 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
   <div class="wrap">
     <div class="section-head center">
       <p class="eyebrow reveal">Strategies</p>
-      <h2 id="strat-title" class="reveal" style="--i:1">Ten strategies. <span class="dim">One bot.</span></h2>
-      <p class="lede reveal" style="--i:2">Pick the approach that matches how you invest. Each strategy runs different indicators — same four-condition structure, different logic.</p>
+      <h2 id="strat-title" class="reveal" style="--i:1">Three strategies. <span class="dim">Plus one built for you.</span></h2>
+      <p class="lede reveal" style="--i:2">We tested every strategy we had on 10 years of market data, comparing each with buying the same stocks on random days, and kept the three that held up best. Same four-condition structure, different logic.</p>
     </div>
     <ol class="strategies" data-stagger="2">
-      <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">01</span><span class="chev" aria-hidden="true"></span></span><strong>Conservative Income</strong><span class="d">Stable, income-generating stocks on mean-reversion dips.</span><span class="tag">Best for: income investors</span></summary>
-        <ul class="strat-conds"><li>RSI below 45</li><li>Price below the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li><li>Within 2% of the lower Bollinger Band</li></ul>
-      </details></li>
       <li><details class="strat glass spot">
         <summary><span class="strat-top"><span class="n">02</span><span class="chev" aria-hidden="true"></span></span><strong>Growth Momentum</strong><span class="d">Pullbacks inside confirmed uptrends in high-growth stocks.</span><span class="tag">Best for: growth investors</span></summary>
         <ul class="strat-conds"><li>RSI 40–55 (a pullback, not oversold)</li><li>Price above the 50-day SMA</li><li>MACD line above its signal line</li><li>Volume above 150% of its 20-day average</li></ul>
       </details></li>
       <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">03</span><span class="chev" aria-hidden="true"></span></span><strong>Value Dip Buyer</strong><span class="d">Our original: oversold dips in fundamentally sound stocks.</span><span class="tag">Best for: value investors</span></summary>
-        <ul class="strat-conds"><li>RSI below 45</li><li>Price below the 20-day MA</li><li>OBV trending up over 5 sessions</li><li>Within 2% of the lower Bollinger Band</li></ul>
+        <summary><span class="strat-top"><span class="n">01</span><span class="chev" aria-hidden="true"></span></span><strong>Conservative Income</strong><span class="d">Steady, income-generating stocks on mean-reversion dips.</span><span class="tag">Best for: cautious and income investors</span></summary>
+        <ul class="strat-conds"><li>RSI below 45</li><li>Price below the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li><li>Within 2% of the lower Bollinger Band</li></ul>
       </details></li>
       <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">04</span><span class="chev" aria-hidden="true"></span></span><strong>Sector Rotation</strong><span class="d">Follows money as it moves between sectors.</span><span class="tag">Best for: macro-minded investors</span></summary>
-        <ul class="strat-conds"><li>RSI below 50</li><li>Price above the 200-day SMA</li><li>Volume above 120% of its 20-day average</li><li>RSI higher than 5 sessions ago</li></ul>
-      </details></li>
-      <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">05</span><span class="chev" aria-hidden="true"></span></span><strong>Breakout Hunter</strong><span class="d">Stocks pressing 52-week highs on rising volume.</span><span class="tag">Best for: momentum traders</span></summary>
-        <ul class="strat-conds"><li>Within 5% of the 52-week high</li><li>Volume above 120% of its 20-day average</li><li>ATR expanding (higher than 10 sessions ago)</li><li>RSI 50–65</li></ul>
-      </details></li>
-      <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">06</span><span class="chev" aria-hidden="true"></span></span><strong>Defensive Bear</strong><span class="d">Stocks holding up while the market falls.</span><span class="tag">Best for: cautious investors</span></summary>
-        <ul class="strat-conds"><li>RSI above 50 (relative strength)</li><li>Price above the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li><li>Price above the 50-day SMA</li></ul>
-      </details></li>
-      <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">07</span><span class="chev" aria-hidden="true"></span></span><strong>Small Cap Momentum</strong><span class="d">Smaller, faster names with momentum. Higher risk.</span><span class="tag">Best for: higher-risk traders</span></summary>
-        <ul class="strat-conds"><li>Price between $10 and $100</li><li>RSI 45–60</li><li>Volume above 110% of its 30-day average</li><li>Price above the 20-day SMA</li></ul>
-      </details></li>
-      <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">08</span><span class="chev" aria-hidden="true"></span></span><strong>Blue Chip Stability</strong><span class="d">Reliable large caps dipping inside long-term uptrends.</span><span class="tag">Best for: long-term investors</span></summary>
-        <ul class="strat-conds"><li>Price below the 20-day MA</li><li>RSI below 45</li><li>Price above the 200-day SMA</li><li>ATR below its 30-day average (low volatility)</li></ul>
-      </details></li>
-      <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">09</span><span class="chev" aria-hidden="true"></span></span><strong>Earnings Recovery</strong><span class="d">Improving companies pulled back after earnings.</span><span class="tag">Best for: turnaround investors</span></summary>
+        <summary><span class="strat-top"><span class="n">09</span><span class="chev" aria-hidden="true"></span></span><strong>Earnings Recovery</strong><span class="d">Good stocks recovering after a sell-off.</span><span class="tag">Best for: dip and turnaround investors</span></summary>
         <ul class="strat-conds"><li>RSI below 45</li><li>OBV trending up over 5 sessions</li><li>Price below the 20-day MA</li><li>More than 15% below the 52-week high</li></ul>
       </details></li>
       <li><details class="strat glass spot">
-        <summary><span class="strat-top"><span class="n">10</span><span class="chev" aria-hidden="true"></span></span><strong>Advanced Custom</strong><span class="d">Build your own screen from the indicator menu.</span><span class="tag">Best for: experienced users</span></summary>
-        <ul class="strat-conds"><li>Choose your own four conditions</li><li>Set your own thresholds</li><li>Built in the bot's Advanced menu</li></ul>
+        <summary><span class="strat-top"><span class="n">10</span><span class="chev" aria-hidden="true"></span></span><strong>Personal Strategy</strong><span class="d">Answer 10 questions and the bot builds a strategy around how you invest.</span><span class="tag">Best for: anyone who wants it tuned to them</span></summary>
+        <ul class="strat-conds"><li>Starts from one of the three setups above</li><li>Tuned to how often you want alerts and how long you hold</li><li>Every alert suggests a stop-loss and a position size from your own risk limit</li><li>Built in the bot with /buildstrategy</li></ul>
       </details></li>
     </ol>
-    <p class="note reveal">A 10-question quiz on your first message picks one for you. Changed your mind? Send <code>/retakequiz</code> any time.</p>
+    <p class="note reveal">A 10-question quiz on your first message picks a strategy for you. Want one tuned to you? Send <code>/buildstrategy</code> any time.</p>
   </div>
 </section>
 
@@ -961,7 +937,7 @@ kbd { font: 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px 
       <details><summary>Where do I receive notifications?<span class="pm" aria-hidden="true"></span></summary><p>In your Telegram chat with @FourConditionBot. There is no separate app or account; everything, from your watchlist to settings and history, is managed with bot commands.</p></details>
       <details><summary>Is FourCondition financial advice?<span class="pm" aria-hidden="true"></span></summary><p>No. FourCondition is a technical screening tool. A signal means certain conditions lined up on a chart. It is not a recommendation to buy or sell, and it does not know your circumstances. Always do your own research.</p></details>
       <details><summary>Does FourCondition guarantee results?<span class="pm" aria-hidden="true"></span></summary><p>No. Signals can and do fail, and past results do not guarantee future ones. The filters reduce some known risks but cannot remove them. See the <a href="/risk/">risk disclosure</a> and the monthly reports above.</p></details>
-      <details><summary>How can I get started?<span class="pm" aria-hidden="true"></span></summary><p>Open <a href="https://t.me/FourConditionBot" target="_blank" rel="noopener">@FourConditionBot</a> in Telegram and press Start. Answer the 10-question quiz to pick a strategy, add tickers with <code>/add</code> or load a sector pack, and you're done. Free includes live alerts, a 150-ticker watchlist and all 10 strategies; <a href="/upgrade/">Pro and Elite</a> add more markets and history.</p></details>
+      <details><summary>How can I get started?<span class="pm" aria-hidden="true"></span></summary><p>Open <a href="https://t.me/FourConditionBot" target="_blank" rel="noopener">@FourConditionBot</a> in Telegram and press Start. Answer the 10-question quiz to pick a strategy, add tickers with <code>/add</code> or load a sector pack, and you're done. Free includes live alerts, a 150-ticker watchlist, every strategy and custom settings; <a href="/upgrade/">Pro and Elite</a> add more markets and history.</p></details>
       <details><summary>Why haven't I had a signal in a while?<span class="pm" aria-hidden="true"></span></summary><p>All four conditions rarely line up at once, especially in strong trends. A quiet bot is working as intended. <code>/topsignal</code> shows which names are closest to passing.</p></details>
       <details><summary>What data do you store?<span class="pm" aria-hidden="true"></span></summary><p>Your Telegram chat ID, watchlist, strategy settings and signal history, plus your answers if you take the optional /quiz survey. No name, email or card details. Data lives on Railway servers in the US. Email legal@fourcondition.app to have it deleted within 7 days.</p></details>
     </div>
